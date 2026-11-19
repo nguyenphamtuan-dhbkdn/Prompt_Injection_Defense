@@ -47,7 +47,25 @@ Import-Csv results/tables/e01_transformer.csv |
 
 ## Tỷ lệ bị vượt qua và báo sai
 
-Chưa chạy thí nghiệm.
+E02 đánh giá mỗi kỹ thuật trên nguồn injection held-out, cùng biến thể cho
+mọi mô hình. Bypass là mọi lượt đều có score dưới ngưỡng; đây chỉ là bỏ lọt
+bộ phân loại, chưa đo hành vi chatbot. Dịch thiếu backend được ghi skipped,
+không nằm trong mẫu số. Xem [bảng E02](../results/tables/e02_bypass_rate.csv).
+
+E03 đo FP/(FP+TN) trên corpus lành riêng; ngưỡng được khóa bằng F1 validation
+lớn nhất, ưu tiên recall khi hòa. Không tuning theo test hoặc corpus lành.
+Lựa chọn và lý do cụ thể được sinh từ mã trong
+[giải thích ngưỡng](../results/tables/e03_operating_thresholds.md);
+[bảng E03](../results/tables/e03_fpr.csv) so sánh ngưỡng mặc định và ngưỡng chọn.
+CI bootstrap giữ cố định mô hình và ngưỡng, có thể suy biến khi chưa thấy lỗi;
+không chứng minh rủi ro thực bằng không. Corpus nhỏ tự biên soạn chưa đại diện
+cho lưu lượng thực tế. F1 cao vẫn có thể bỏ lọt biến thể, không bảo đảm an toàn.
+
+![Precision–recall test và điểm vận hành](../results/figures/e03_precision_recall.png)
+
+[PDF vector](../results/figures/e03_precision_recall.pdf), PNG xuất 300 dpi;
+đường cong và ứng viên ngưỡng có CSV riêng để tái tính.
+Chi tiết giao thức và giới hạn nằm trong [quyết định M5](decisions.md).
 
 ## Kiểm thử chatbot Ollama
 

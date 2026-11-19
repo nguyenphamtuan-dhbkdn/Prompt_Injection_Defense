@@ -31,3 +31,17 @@ results/tables/*
 !results/tables/e01_classical_fixture.metadata.json
 !results/tables/e01_transformer.csv
 !results/tables/e01_transformer.metadata.json
+!results/tables/e02_bypass_rate.csv
+!results/tables/e02_bypass_rate.metadata.json
+!results/tables/e03_fpr.csv
+!results/tables/e03_fpr.metadata.json
+!results/tables/e03_pr_curve.csv
+!results/tables/e03_thresholds.csv
+!results/tables/e03_operating_thresholds.md
+!results/tables/m5_predictions.csv
+!results/tables/e02_bypass_rate_fixture.csv
+!results/tables/e03_fpr_fixture.csv
+!results/figures/e02_bypass_rate.png
+!results/figures/e02_bypass_rate.pdf
+!results/figures/e03_precision_recall.png
+!results/figures/e03_precision_recall.pdf

@@ -220,3 +220,56 @@
   Tắt example database để không lưu raw payload ngoài data/results; dùng
   derandomize cho dữ liệu kiểm thử tái lập. Ngẫu nhiên của generator sản phẩm
   luôn đi qua `SimRNG.generator`, không tạo stream riêng trong transform.
+
+## Quyết định M5
+
+- Chỉ triển khai E02/E03, không làm middleware, gọi Ollama hoặc triển khai
+  các mốc tiếp theo. Hai entry point chạy chung `experiments/m5_evaluation.py`
+  để dùng cùng mô hình, ngưỡng và biến thể. Classical được fit lại bằng đúng
+  thứ tự/seed E01 trước các bước ngẫu nhiên khác. Transformer là tùy chọn
+  qua `--checkpoint`; khi chọn, bắt buộc kiểm tra hash checkpoint, cấu hình
+  và ID/hash cả ba split với metadata M3, tránh đánh giá nhầm mô hình/rò rỉ.
+  Thiếu extra vẫn chạy classical; không tạo số đo transformer giả.
+- Chọn ngưỡng riêng mỗi mô hình bằng F1 validation lớn nhất; ứng viên gồm
+  score validation và ngưỡng mặc định. Hòa F1 thì ưu tiên recall rồi ngưỡng
+  nhỏ hơn. F1 cân bằng precision/recall khi chưa có chi phí FP/FN thực tế;
+  đây không phải tối ưu chi phí vận hành hay bảo đảm FPR. Test và corpus lành
+  được giữ ngoài chọn ngưỡng. Bảng lưu cả ngưỡng mặc định và ngưỡng chọn để
+  thấy đánh đổi. Lựa chọn cụ thể và số đo được mã thí nghiệm sinh vào
+  [giải thích ngưỡng](../results/tables/e03_operating_thresholds.md);
+  toàn bộ ứng viên nằm trong `e03_thresholds.csv`, không chép số đo thủ công.
+- Bypass = số nguồn injection được cho qua / số nguồn được đánh giá, không
+  điều kiện hóa trên việc nguồn gốc đã bị chặn. Chỉ tạo biến thể từ test
+  injection, mỗi technique một biến thể mỗi source, chia sẻ giữa các mô hình.
+  Multi-turn dùng max score từng lượt: chỉ bypass khi mọi lượt được cho qua;
+  không dùng chuỗi ghép như một tin nhắn. Đây là giả định guard từng lượt,
+  chưa mô phỏng bộ nhớ hội thoại và không đo chatbot tuân theo tấn công.
+- Dịch thiếu backend cục bộ được ghi attempted/skipped với mẫu số evaluated
+  bằng không và rate/CI để trống, không gán bypass bằng zero. Không thay backend
+  dịch thật bằng stub. Các kỹ thuật còn lại chạy đầy đủ; score/ID/trạng thái
+  lưu trong `m5_predictions.csv` để tái tính, không lưu raw text vào log.
+- FPR = FP/(FP+TN) trên corpus lành riêng; từ chối nếu corpus giao với bất kỳ
+  split nào theo chuẩn hóa M1. PR cần cả hai nhãn nên dùng validation và test
+  deepset, không ghép corpus lành vào dữ liệu chọn ngưỡng. Hình PR vẽ test,
+  đánh dấu ngưỡng đã chọn từ validation; CSV giữ cả hai đường cong cùng điểm
+  cuối không có threshold. PNG xuất 300 dpi, PDF giữ vector và dpi tương tự
+  cho thành phần raster. Hình bypass hiển thị CI và bỏ nhóm không đánh giá.
+- CI percentile bootstrap theo source trong từng technique cho bypass và
+  theo hàng corpus cho FPR; precision/recall/F1 test resample phân tầng lớp.
+  Dùng cùng Generator và budget ghi trong metadata. CI giữ ngưỡng đã chọn,
+  chưa bao gồm bất định do fit model, chọn ngưỡng, dịch hoặc biến thể khác.
+  CI suy biến khi không quan sát lỗi không chứng minh xác suất lỗi bằng không.
+- Full run từ chối fixture; `--fixture` luôn thêm hậu tố tên tệp, không ghi
+  đè bảng khoa học. Golden nhỏ được sinh từ cùng runner với budget CI nhỏ;
+  kiểm thử tái tính rate từ score, kiểm tra provenance và dpi. Không chạy
+  full dataset/transformer trong CI mặc định. Metadata cạnh hai bảng chứa
+  config, seed, commit/dirty, phiên bản, split/benign ID+hash, hash mã và output.
+- Cache Arrow đã chuẩn bị có thể dùng qua `--prepared-cache` khi Hub không
+  kết nối được. Chỉ chấp nhận thư mục revision ghim, kiểm tra số hàng rồi
+  so sánh toàn bộ split ID/nhãn/hash với metadata E01 đầy đủ trước khi fit;
+  không đổi loader M1 hay nhận fixture làm dữ liệu khoa học. Metadata E02/E03
+  giữ hash các tệp cache để tái lập, không cần dịch vụ ngoài khi chạy M5.
+- Corpus lành tự biên soạn, thiên về phân phối giới hạn và chưa duyệt độc lập;
+  FPR không ước lượng đại diện cho lưu lượng sản phẩm. Score SVM/softmax chưa
+  hiệu chỉnh. Ngưỡng chọn trên dữ liệu gốc có thể bỏ lọt obfuscation; dự án chỉ
+  phục vụ nghiên cứu/đánh giá, không phải hệ thống an toàn cấp sản phẩm.

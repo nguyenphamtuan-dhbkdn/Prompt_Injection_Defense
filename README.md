@@ -150,6 +150,35 @@ nó kiểm tra huấn luyện, tái lập và save/load, không chứng minh ch�
 baseline pretrained. Kiểm thử mặc định mô phỏng không có heavy dependencies
 và vẫn chạy classical; M0–M2 không cần cài extra transformer.
 
+## Đánh giá M5: bypass và báo sai
+
+```powershell
+# Classical standalone, không cần torch:
+uv run python experiments/e02_obfuscation_bypass_rate.py
+# Thêm checkpoint M3 đã huấn luyện và metadata gốc để so sánh hai họ model:
+uv run --extra transformer python experiments/e03_benign_false_positive_rate.py --checkpoint results/tables/e01_transformer_model
+# Hồi quy ngoại tuyến; không ghi đè tên bảng khoa học:
+uv run python experiments/e03_benign_false_positive_rate.py --fixture --n-bootstrap 30
+```
+
+Hai entry point E02/E03 cùng chạy cả hai phép đo để giữ nguyên model và ngưỡng.
+Khi dữ liệu đầy đủ đã có trong cache, có thể đọc Arrow hoàn toàn ngoại tuyến;
+runner xác minh toàn bộ ID/nhãn/hash văn bản với metadata E01:
+
+```powershell
+$revision = '4f61ecb038e9c3fb77e21034b22511b523772cdd'
+$cachePath = "data/raw/hf_cache/deepset___prompt-injections/default/0.0.0/$revision"
+uv run python experiments/e02_obfuscation_bypass_rate.py --checkpoint results/tables/e01_transformer_model --prepared-cache $cachePath
+```
+
+Ngưỡng được chọn bằng F1 validation; xem
+[giải thích tự sinh](results/tables/e03_operating_thresholds.md),
+[bypass theo technique](results/tables/e02_bypass_rate.csv) và
+[FPR corpus lành](results/tables/e03_fpr.csv). Điểm PR, score theo ID và toàn bộ
+ứng viên ngưỡng có CSV; PNG/PDF ở `results/figures`, xuất 300 dpi.
+Dịch thiếu backend được bỏ qua rõ ràng, không giả lập kết quả dịch.
+Multi-turn chỉ đo giả định guard chặn từng lượt, chưa gọi chatbot.
+
 ## Phạm vi và giới hạn
 
 Đây là dự án nghiên cứu, chưa phải hệ thống an toàn dùng trong sản phẩm.
