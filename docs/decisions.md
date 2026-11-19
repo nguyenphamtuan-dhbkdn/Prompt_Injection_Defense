@@ -273,3 +273,58 @@
   FPR không ước lượng đại diện cho lưu lượng sản phẩm. Score SVM/softmax chưa
   hiệu chỉnh. Ngưỡng chọn trên dữ liệu gốc có thể bỏ lọt obfuscation; dự án chỉ
   phục vụ nghiên cứu/đánh giá, không phải hệ thống an toàn cấp sản phẩm.
+
+## Quyết định M6
+
+- Chỉ triển khai middleware và HTTP client cục bộ cần cho middleware; chưa
+  triển khai harness M7, demo CLI/FastAPI hoặc phép đo M8. `GuardedChat` là
+  stateless: mỗi `send` tạo một system message và một user message, không có
+  bộ nhớ hội thoại. Không import corpus `attacks` trong middleware/demo.
+- `ClassifierGuard` nhận `Detector` đã fit, giữ hợp đồng score hướng injection
+  từ M2/M3. Dùng `score >= threshold`, không dựa vào label mặc định của model;
+  threshold mặc định theo cấu hình SPEC, người gọi truyền ngưỡng validation M5
+  tương ứng model khi cần. Không tự tải model hoặc chọn ngưỡng trên dữ liệu mới.
+  `technique_guess=None` vì detector nhị phân chưa được huấn luyện đoán kỹ thuật.
+  Chuỗi rỗng/blank, sai kiểu và quá giới hạn `MAX_TEXT_LENGTH` bị từ chối;
+  score không hữu hạn hoặc ngoài miền xác suất gây lỗi, không cho qua.
+- Chỉ system message chứa chỉ dẫn có thẩm quyền. User request đặt trong
+  `<untrusted_user>`, tài liệu tham chiếu đặt trong `<untrusted_document>`.
+  Mọi nội dung nguồn được HTML-escape cả dấu ngoặc, ampersand và quote trước
+  khi bọc; không unescape lại trước khi gửi. Vì vậy closing tag do nguồn cung
+  cấp không thể kết thúc block trong cấu trúc chuỗi. Template giải thích rõ
+  cả nội dung đã giải mã cũng không có thẩm quyền đổi vai trò/quy tắc.
+  Đây là quy ước cho LLM, không phải ranh giới bảo mật được chứng minh.
+- Screen user và document riêng, chặn ngay nếu một nguồn bị gắn injection;
+  cả hai phải qua guard trước khi gọi Ollama. `ChatTurnResult.status` là
+  allowed/blocked/error, chỉ allowed có response; repr không chứa response.
+  Decision là nguồn đầu tiên bị chặn hoặc score lớn nhất khi các nguồn qua
+  guard; rule cho biết classifier/output_filter/passed/layer_error. Mọi lỗi
+  layer trả error cố định, không trả exception/backend body và không gọi
+  chatbot tiếp sau lỗi input. Invalid input gọi guard trực tiếp gây ValueError.
+- Output filter trả True khi cần chặn. Dùng private marker cố định, span từ
+  liên tiếp trùng system, regex xác nhận tuân theo override và độ phủ tập từ
+  system trong response. Độ phủ từ là semantic proxy nhẹ, không phải mô hình
+  embedding hoặc bộ xác minh: không hiểu negation đầy đủ, đồng nghĩa hay ý đồ.
+  Tham số heuristic được ghi ở docstring, chưa tuning bằng kết quả chatbot.
+  Log rule output_filter dùng label injection/score một như cờ quy tắc nhị
+  phân, không diễn giải thành xác suất model hay confidence đã hiệu chỉnh.
+- Đã đối chiếu [Ollama Chat API](https://docs.ollama.com/api/chat): POST
+  `/api/chat`, messages role/content, `stream=false`, đọc message.content
+  khi done=true. Dùng urllib chuẩn Python để classical path không cần extra
+  demo. Kiểm tra host bằng MiddlewareConfig; tắt proxy môi trường và redirect
+  để không chuyển payload khỏi loopback. Timeout hữu hạn, giới hạn byte phản
+  hồi và từ chối response sai cấu trúc. Không cần cài Ollama Python SDK.
+- Log duy nhất là audit metadata: độ dài, SHA-256 tám hex đầu, label, score,
+  rule ID cố định. Không log exception/stack trace, request, document, system
+  hay response. Integration capture cả allow/block/error; kiểm thử grep-style
+  quét sink trong middleware/demo, bổ sung AST allowlist cho biểu thức audit.
+  Không cho phép sink log mới nếu chưa cập nhật chính sách và kiểm thử.
+- Integration dùng detector TF-IDF thực fit fixture ngoại tuyến và mock riêng
+  HTTP opener để kiểm tra contract request/response, không cần Ollama sống
+  hay torch. Các prompt cố định chỉ kiểm tra nối các layer, không dùng làm
+  ước lượng chất lượng held-out. ID pytest của payload là tên trường hợp,
+  tránh đưa toàn nội dung vào tên/log kiểm thử. Chưa chạy red-team live M7.
+- Đây vẫn là middleware nghiên cứu/đánh giá. Classifier có thể bỏ lọt biến
+  thể, delimiter chỉ hướng dẫn model, output heuristic có thể báo sai/bỏ lọt
+  paraphrase hoặc disclosure ngắn. Không tuyên bố an toàn cấp sản phẩm và
+  không tạo bảng số đo mới khi chưa có thí nghiệm nguồn.

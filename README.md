@@ -179,6 +179,42 @@ Ngưỡng được chọn bằng F1 validation; xem
 Dịch thiếu backend được bỏ qua rõ ràng, không giả lập kết quả dịch.
 Multi-turn chỉ đo giả định guard chặn từng lượt, chưa gọi chatbot.
 
+## Middleware M6
+
+`ClassifierGuard` nhận detector đã huấn luyện (classical hoặc transformer),
+không cần corpus tấn công. Ví dụ ghép với detector đang có trong Python:
+
+```python
+from pidefense.config import MiddlewareConfig
+from pidefense.demo.ollama_client import OllamaClient
+from pidefense.middleware.classifier_guard import ClassifierGuard
+from pidefense.middleware.pipeline import GuardedChat
+
+cfg = MiddlewareConfig()
+# detector là đối tượng Detector đã fit; có thể truyền ngưỡng validation M5.
+guard = ClassifierGuard(detector, threshold=cfg.guard_threshold)
+chat = GuardedChat(guard, OllamaClient(cfg.ollama_host, cfg.ollama_model))
+turn = chat.send("Tóm tắt tài liệu này.", context_document="Nội dung tham chiếu.")
+# turn.status: allowed / blocked / error; chỉ allowed có turn.response.
+# Không ghi turn.response hoặc nội dung nguồn vào log.
+```
+
+Ollama phải chạy cục bộ và đã có model cấu hình. Client chỉ chấp nhận loopback,
+tắt proxy/redirect; host thiếu hoặc response lỗi trả trạng thái error qua
+pipeline. Không cần extra demo cho HTTP client này. Middleware kiểm tra riêng
+user/document, HTML-escape dữ liệu trong tag cố định và áp dụng output filter
+trước khi trả response. Quy ước delimiter và giới hạn heuristic nằm trong
+[quyết định M6](docs/decisions.md#quyết-định-m6).
+
+Kiểm thử M6 mặc định dùng TF-IDF thật với HTTP giả lập, không gọi model sống:
+
+```powershell
+uv run pytest tests/integration/test_middleware.py tests/unit/test_log_hygiene.py --no-cov
+uv run ruff check .
+uv run mypy --strict src
+uv run pytest
+```
+
 ## Phạm vi và giới hạn
 
 Đây là dự án nghiên cứu, chưa phải hệ thống an toàn dùng trong sản phẩm.

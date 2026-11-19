@@ -1,1 +1,1 @@
-"""Reserved package for a later milestone; no functionality implemented in M0."""
+"""Local Ollama transport for the research middleware."""

@@ -1,1 +1,1 @@
-"""Reserved package for a later milestone; no functionality implemented in M0."""
+"""Defense-in-depth research middleware; no attack corpus dependency."""
