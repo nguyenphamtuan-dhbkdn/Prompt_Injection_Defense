@@ -1,5 +1,5 @@
 param(
-    [ValidateSet('setup', 'test', 'test-slow', 'lint', 'typecheck', 'check', 'experiments', 'figures', 'report', 'demo')]
+    [ValidateSet('setup', 'test', 'test-slow', 'lint', 'typecheck', 'check', 'experiments', 'transformer', 'figures', 'report', 'demo')]
     [string]$Task = 'check'
 )
 
@@ -19,10 +19,11 @@ try {
     switch ($Task) {
         'setup' { Invoke-Uv -Arguments @('sync', '--locked', '--extra', 'dev') }
         'test' { Invoke-Uv -Arguments @('run', 'pytest') }
-        'test-slow' { Invoke-Uv -Arguments @('run', 'pytest', '-m', 'slow') }
+        'test-slow' { Invoke-Uv -Arguments @('run', '--extra', 'transformer', 'pytest', '-m', 'slow') }
         'lint' { Invoke-Uv -Arguments @('run', 'ruff', 'check', '.') }
         'typecheck' { Invoke-Uv -Arguments @('run', 'mypy', '--strict', 'src') }
         'experiments' { Invoke-Uv -Arguments @('run', 'python', 'experiments/e01_baseline_classical_vs_transformer.py') }
+        'transformer' { Invoke-Uv -Arguments @('run', '--extra', 'transformer', 'python', 'experiments/e01_transformer.py') }
         'check' {
             Invoke-Uv -Arguments @('run', 'ruff', 'check', '.')
             Invoke-Uv -Arguments @('run', 'mypy', '--strict', 'src')

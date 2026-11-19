@@ -8,6 +8,7 @@ __pycache__/
 .ruff_cache/
 .hypothesis/
 .coverage
+.coverage.*
 htmlcov/
 coverage.xml
 build/
@@ -28,3 +29,5 @@ results/tables/*
 !results/tables/e01_classical.metadata.json
 !results/tables/e01_classical_fixture.csv
 !results/tables/e01_classical_fixture.metadata.json
+!results/tables/e01_transformer.csv
+!results/tables/e01_transformer.metadata.json

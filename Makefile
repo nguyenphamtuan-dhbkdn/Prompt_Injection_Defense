@@ -1,6 +1,6 @@
 UV ?= uv
 
-.PHONY: setup test test-slow lint typecheck experiments figures report demo
+.PHONY: setup test test-slow lint typecheck experiments transformer figures report demo
 
 setup:
 	$(UV) sync --locked --extra dev
@@ -9,7 +9,7 @@ test:
 	$(UV) run pytest
 
 test-slow:
-	$(UV) run pytest -m slow
+	$(UV) run --extra transformer pytest -m slow
 
 lint:
 	$(UV) run ruff check .
@@ -19,6 +19,9 @@ typecheck:
 
 experiments:
 	$(UV) run python experiments/e01_baseline_classical_vs_transformer.py
+
+transformer:
+	$(UV) run --extra transformer python experiments/e01_transformer.py
 
 # Later milestones must replace these explicit failures with real implementations.
 figures report demo:

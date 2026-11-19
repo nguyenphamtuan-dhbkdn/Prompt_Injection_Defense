@@ -122,3 +122,44 @@
   payload vào metadata. Hash mã nguồn xác định nội dung khi chưa commit.
   Tất cả kết quả giữ phạm vi nghiên cứu; F1 cao vẫn có thể bỏ lọt tấn công,
   chưa kiểm chứng trước biến thể đối kháng và không bảo đảm an toàn sản phẩm.
+
+## Quyết định M3
+
+- Chỉ thêm baseline transformer tùy chọn và timing dùng lại cho E5; chưa làm
+  E5 so sánh, bootstrap CI hoặc mốc M4 trở đi. Dùng entry point riêng
+  `experiments/e01_transformer.py` để giữ nguyên kết quả và luồng chạy M2.
+- Đã đọc source của gói Transformers ghim trước khi viết adapter:
+  `PreTrainedTokenizerBase.__call__`, `PreTrainedModel.from_pretrained`,
+  `save_pretrained` và `DistilBertForSequenceClassification.forward`.
+  Dùng AutoTokenizer/AutoModelForSequenceClassification, logits và loss trả
+  bởi `return_dict=True`; không dùng Trainer nên không cần accelerate.
+- Lazy import qua `import_module` trong `try/except ImportError`; không import
+  torch/transformers ở module scope hoặc trong type hints. Lỗi thiếu extra có
+  hướng dẫn cài rõ ràng. Kiểm thử subprocess mô phỏng cả hai gói không tồn tại
+  và fit classical thật; kiểm thử slow được bỏ qua nếu thiếu backend.
+- Fine-tune toàn bộ trọng số bằng CPU, eager attention, AdamW, learning rate
+  cố định, weight decay, gradient clipping. Không scheduler, early stopping
+  hoặc chọn checkpoint theo test. Giữ budget mặc định của cấu hình SPEC.
+  Giới hạn CPU hai thread; kiểm tra max_length không vượt position capacity.
+- Thư viện torch không nhận NumPy Generator cho dropout/khởi tạo: rút seed
+  nguyên từ Generator duy nhất sau chia dữ liệu, seed CPU torch trong
+  `fork_rng(devices=[])`, phục hồi RNG và thiết lập toàn cục khi thoát.
+  Mỗi epoch shuffle trực tiếp bằng Generator đó. Bật deterministic algorithms;
+  không hứa tái lập bitwise giữa phiên bản/hardware khác nhau.
+- Revision pretrained được xác minh từ API Hugging Face và ghim trong mã.
+  Metadata giữ revision yêu cầu/đã resolve, config kiến trúc, optimizer, seed,
+  phiên bản, commit/dirty, hash mã/checkpoint/CSV và ID/hash split như M2.
+  Cache mô hình nằm dưới data/raw; checkpoint không chứa payload huấn luyện.
+- Dùng cùng metric M2, injection positive, softmax lớp một, threshold cố định
+  và train-only fit. Không áp sàn classical lên transformer để rồi tuning trên
+  test; báo cáo đủ chỉ số đo thật. Tên bảng khoa học từ chối --fixture.
+- Timing bằng perf_counter_ns, batch một, bao gồm tokenization và host score,
+  loại load/train/warmup; lưu từng mẫu và mean/median/p95. Đây là phép đo sơ bộ
+  cho RQ5, chưa có CI hoặc kết luận so sánh classical. Giữ thông tin CPU/thread
+  trong metadata để diễn giải; timing không phải đại lượng tái lập chính xác.
+- Slow test dùng tokenizer cục bộ và DistilBERT nhỏ khởi tạo có seed để kiểm
+  tra tái lập trọng số/score, gradient cập nhật, contract chung và save/load
+  ngoại tuyến. Không dùng mạng ngẫu nhiên đó để tuyên bố hiệu quả pretrained.
+  Coverage mặc định vẫn áp toàn src; không loại code transformer khỏi mẫu số.
+- Mọi kết quả chỉ phục vụ nghiên cứu: truncation có thể bỏ phần chỉ dẫn nguy
+  hiểm; softmax chưa hiệu chỉnh; F1 tổng hợp cao vẫn có thể bỏ lọt tấn công.

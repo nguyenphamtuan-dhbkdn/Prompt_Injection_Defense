@@ -1,6 +1,6 @@
 # Báo cáo nghiên cứu PI-DEFENSE
 
-Khung báo cáo theo Phần 12 của SPEC.md. Baseline classical đã được tạo ở M2;
+Khung báo cáo theo Phần 12 của SPEC.md. Baseline classical và transformer đã được tạo;
 các phần khác chờ mốc tương ứng. Chỉ đọc số đo từ tệp kết quả thí nghiệm.
 
 ## Giới thiệu và động lực
@@ -30,7 +30,20 @@ Import-Csv results/tables/e01_classical.csv |
 
 Linear SVM dùng sigmoid margin làm score, chưa hiệu chỉnh xác suất. Không
 chọn tham số hoặc threshold bằng test. Các số đo tổng hợp này không chứng
-minh khả năng chống obfuscation hay an toàn triển khai. Transformer chưa chạy.
+minh khả năng chống obfuscation hay an toàn triển khai.
+
+DistilBERT tùy chọn được fine-tune trên cùng train và đánh giá cùng test với
+M2, giữ validation riêng. Các chỉ số đo thật nằm trong
+[CSV transformer](../results/tables/e01_transformer.csv), cùng
+[metadata tái lập](../results/tables/e01_transformer.metadata.json).
+Không chọn checkpoint hoặc threshold theo test. Mô hình cắt văn bản theo
+max_length nên có thể bỏ qua phần chỉ dẫn nguy hiểm ở cuối; softmax chưa
+được hiệu chỉnh xác suất. Chỉ số cao không chứng minh an toàn triển khai.
+
+```powershell
+Import-Csv results/tables/e01_transformer.csv |
+    Select-Object model, precision, recall, f1, roc_auc
+```
 
 ## Tỷ lệ bị vượt qua và báo sai
 
@@ -42,7 +55,15 @@ Chưa chạy kiểm thử trên demo cục bộ.
 
 ## Hiệu năng và đánh đổi
 
-Chưa đo độ trễ.
+M3 đã đo latency transformer trên CPU, batch một, bao gồm tokenize và loại
+trừ load/train/warmup. Mean/median/p95 đọc từ CSV transformer; từng mẫu và
+điều kiện đo nằm trong metadata cạnh nó. Chưa chạy E5 so sánh với classical
+hoặc bootstrap CI; chưa kết luận phù hợp làm guard đồng bộ.
+
+```powershell
+Import-Csv results/tables/e01_transformer.csv |
+    Select-Object model, latency_mean_ms, latency_median_ms, latency_p95_ms
+```
 
 ## Độ bền vững trước nhiễu loạn đối kháng
 

@@ -1,4 +1,4 @@
-# M0 configuration only; optional training is implemented in M3.
+# M3 optional CPU fine-tuning; install the transformer extra to run.
 transformer_model:
   base_model: "distilbert-base-uncased"
   max_length: 128

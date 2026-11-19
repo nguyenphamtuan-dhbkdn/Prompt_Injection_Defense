@@ -1,0 +1,2 @@
+model,precision,recall,f1,roc_auc,threshold,n_train,n_val,n_test,latency_mean_ms,latency_median_ms,latency_p95_ms
+distilbert,0.9807692307692307,0.9622641509433962,0.9714285714285714,0.9877358490566037,0.5,463,66,133,71.20604436090225,59.7208,132.95594

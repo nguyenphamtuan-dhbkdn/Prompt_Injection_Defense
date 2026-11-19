@@ -1,9 +1,9 @@
 # PI-DEFENSE
 
 Dự án nghiên cứu và đánh giá phòng thủ trước prompt injection. Hiện chỉ có
-M0–M2: cấu hình YAML, RNG có seed, tải/chia dữ liệu, TF-IDF và các bộ phân loại
-Logistic Regression, Linear SVM, Random Forest. Các mô-đun transformer,
-tấn công và middleware vẫn là vị trí dành sẵn.
+M0–M3: cấu hình YAML, RNG có seed, tải/chia dữ liệu, TF-IDF và các bộ phân loại
+Logistic Regression, Linear SVM, Random Forest, cùng DistilBERT tùy chọn.
+Các mô-đun tấn công và middleware vẫn là vị trí dành sẵn.
 
 ## Chạy trên Windows PowerShell
 
@@ -115,6 +115,40 @@ uv run python experiments/e01_baseline_classical_vs_transformer.py --fixture
 
 Fixture golden được tạo bằng lệnh trên và kiểm tra trong pytest, không đại
 diện chất lượng mô hình. CLI tổng quát và lưu/nạp model triển khai để mốc sau.
+
+## Baseline M3 (tùy chọn)
+
+```powershell
+uv sync --locked --extra dev --extra transformer
+uv run --extra transformer python experiments/e01_transformer.py
+Import-Csv results/tables/e01_transformer.csv | Format-Table
+uv run --extra transformer pytest -m slow
+```
+
+M3 fine-tune toàn bộ DistilBERT trên CPU, có giới hạn epoch trong cấu hình.
+Revision trọng số mặc định được ghim trong mã; `--revision` cho phép tái chạy
+revision ghi trong metadata. Lần đầu cần mạng để tải mô hình và dữ liệu;
+`--local-files-only` yêu cầu mô hình có sẵn trong cache. Máy cần đủ RAM cho
+trọng số, gradient và trạng thái AdamW. Không cần Trainer hay accelerate.
+
+E01 transformer dùng cùng split và công thức precision/recall/F1/ROC-AUC với
+M2; validation để riêng và không điều chỉnh theo test. CSV và metadata cạnh
+nó lưu kết quả, seed torch rút từ Generator, phiên bản, revision, hash nguồn,
+thành viên split, checkpoint và timing từng lần. Checkpoint native Hugging
+Face nằm cạnh bảng trong thư mục `e01_transformer_model` (không đưa vào Git).
+Nạp lại bằng `pidefense.models.transformer.load_transformer(Path(...))`.
+
+Độ trễ dùng `predict` từng câu, bao gồm tokenize, loại trừ tải/huấn luyện và
+warmup, cố định CPU hai thread. CSV chứa mean/median/p95; metadata giữ mẫu
+timing để E5 dùng sau. Chưa có CI thống kê hoặc so sánh latency với classical.
+Timing thay đổi giữa các lần chạy; chỉ tái lập trọng số/score trong cùng môi
+trường, seed, revision và thứ tự gọi, không cam kết bitwise giữa phần cứng.
+
+`--fixture` chạy mẫu CI, bắt buộc tên bảng riêng và không đại diện hiệu quả.
+Kiểm thử slow tạo mạng DistilBERT rất nhỏ trên máy, không tải checkpoint;
+nó kiểm tra huấn luyện, tái lập và save/load, không chứng minh chất lượng
+baseline pretrained. Kiểm thử mặc định mô phỏng không có heavy dependencies
+và vẫn chạy classical; M0–M2 không cần cài extra transformer.
 
 ## Phạm vi và giới hạn
 
