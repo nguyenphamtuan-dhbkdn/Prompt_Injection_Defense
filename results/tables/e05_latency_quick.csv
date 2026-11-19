@@ -1,0 +1,5 @@
+model,status,n_texts,n_measurements,mean_ms,median_ms,p95_ms,mean_ci_low_ms,mean_ci_high_ms,confidence,n_bootstrap,warmup,repeats
+logreg,evaluated,8,16,4.32849375,4.0421,6.17955,3.8095378125000003,4.851914999999999,0.95,100,3,2
+rf,evaluated,8,16,20.449568749999997,19.57245,24.47065,19.64330890625,21.30127640625,0.95,100,3,2
+svm,evaluated,8,16,4.2708812499999995,3.8049,6.946350000000001,3.5567084375,5.19516765625,0.95,100,3,2
+distilbert,not_requested_optional_checkpoint,,,,,,,,,,,

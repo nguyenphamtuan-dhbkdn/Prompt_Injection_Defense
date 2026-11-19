@@ -393,3 +393,74 @@
   yêu cầu PIDEFENSE_RUN_LIVE_OLLAMA=1. Môi trường triển khai M7 hiện không có
   Ollama trên localhost; chưa có kết quả chatbot sống hoặc nhận định người
   duyệt. Không thay chúng bằng số mô phỏng để tuyên bố đạt acceptance live.
+
+## Quyết định M8
+
+- Triển khai M8 theo yêu cầu tiếp theo của người dùng, giữ nguyên trạng thái
+  acceptance live M7 còn thiếu: chưa có Ollama và người duyệt, không dùng
+  fixture để lấp kết quả sống. E05/E06 classical hoạt động độc lập torch.
+- RQ6: generator từ đồng nghĩa/preamble ở attacks/perturb.py có scope comment;
+  eval/robustness.py chỉ điều phối score/search. Budget là số từ thay cộng
+  số từ thêm, không trộn số ký tự với số phép biến đổi. Danh sách đồng nghĩa
+  và preamble cố định lưu trong metadata; các vị trí được hoán vị bằng cùng
+  Generator, chỉ giữ tập vị trí hữu hạn và số phép thay hữu hạn. Thử budget
+  tăng dần, dừng khi thấy score dưới threshold hoặc hết query/family.
+  Baseline tính vào query budget; score bằng threshold vẫn bị chặn.
+- Minimum là chi phí nhỏ nhất quan sát trong các candidate đã query, không
+  phải nghiệm toàn cục hay chứng minh tối ưu. Nguồn ban đầu đã benign ghi
+  already_benign, không tính là flip mới; mẫu số flip_rate chỉ gồm nguồn
+  ban đầu bị chặn. Không tìm thấy thì minimum để trống, không gán zero.
+  Chưa chứng minh đồng nghĩa/preamble bảo toàn ngữ nghĩa theo ngữ cảnh;
+  prediction flip chưa phải chatbot vi phạm hay tấn công thành công.
+- E05 đo predict batch một, gồm tokenization/score về host, bỏ load/train và
+  warmup. Mọi model dùng cùng input/order trên cùng máy CPU; thứ tự model
+  được rút từ RNG. Giới hạn native thread bằng threadpoolctl, torch CPU nếu
+  có dùng cùng giới hạn; lưu threadpool_info/platform và tham số đo. Đã đọc
+  chữ ký/docstring API cài đặt trước khi dùng; pin threadpoolctl trực tiếp
+  bằng phiên bản vốn đã có trong lockfile, không nâng phiên bản bắc cầu.
+- Bootstrap CI cho mean latency resample theo cụm input, giữ mọi lần lặp
+  của cùng input; không coi các lượt đo lặp là mẫu độc lập. Khoảng percentile
+  mô tả bất định hỗn hợp input có điều kiện trên timing quan sát, không bao
+  gồm biến thiên thời gian/hệ điều hành, train hay hardware. Timing không
+  tái lập bitwise. Giữ từng timing/source ID/repeat để tái tính mean/median/p95.
+  Không kết luận đạt SLO đồng bộ khi chưa có SLO hay workload sản phẩm.
+- E05/E06 dùng chung runner để có cùng split/model/thứ tự rút RNG và threshold
+  validation. Classical fit theo thứ tự E01/M5; transformer chỉ được nạp khi
+  --checkpoint được chọn và đã khớp ID/nhãn/hash split, cấu hình và hash file
+  M3. Không tự train/download torch hoặc thay model thiếu bằng số đo giả.
+  Hàng optional not_requested để trống metric; không ghép latency M3 cũ với
+  timing classical mới làm một đối chứng. Bản đầy đủ có thể dùng Arrow cache
+  ghim đã xác minh; không nhận fallback CSV nhỏ làm kết quả khoa học.
+- run_all --quick hoàn toàn offline: dùng fixture nguồn thật đã commit,
+  budget timing/bootstrap/search nhỏ và E04 canned replies/dịch tổng hợp có
+  nhãn. E01/E02/E03 giữ hậu tố _fixture, E05/E06 giữ _quick, không ghi đè số
+  đo tập đầy đủ. Budget bootstrap M5 quick giữ đúng golden đã có; timing mới
+  không dùng golden thời gian cứng. Mỗi thí nghiệm độc lập có một Generator
+  từ seed cấu hình, toàn bộ random của thí nghiệm dùng stream đó; manifest
+  tổng ghi từng stage, config, seed, commit/dirty, phiên bản và hash.
+- Full runner chạy classical mặc định, E04 live chỉ khi --live-ollama;
+  transformer cần --checkpoint M3 đã tạo bằng lệnh riêng. Trạng thái skip
+  optional và lỗi E04 được giữ trong manifest, không báo như completed live.
+  Không tự gửi payload vào chatbot ngoài loopback hoặc dịch vụ dịch ngoài.
+- Plotting đọc CSV đã lưu, chung font/palette, PNG/PDF ở độ phân giải cấu
+  hình; ROC tự tính TPR/FPR với tie score dịch cùng ngưỡng, lưu điểm ra CSV.
+  Tắt timestamp PDF để cùng dữ liệu/mã không đổi hash chỉ do thời gian xuất.
+  Khi vẽ lại hình M5, giữ hash hình trước trong prior_figure_sha256 và thêm
+  figure_rendering provenance/hash hiện tại; không đổi số đo CSV. Renderer
+  có metadata riêng vì source/version lúc vẽ có thể khác lúc đo thí nghiệm.
+- report.py tự lắp báo cáo theo Phần 12, đọc CSV/JSON và kiểm tra hash CSV
+  đã biết. Không chép số đo vào văn xuôi; bảng được tạo nguyên từ nguồn và
+  gắn scope đầy đủ/quick, link CSV/metadata/hash. report_data.json giữ input
+  hash, dữ liệu bảng và nội dung lắp ráp. Dữ liệu thiếu nêu rõ, không điền
+  zero hoặc suy luận nhãn thủ công. Danh mục chứa mọi bảng/metadata/hình sẵn
+  có; raw ví dụ chỉ được liên kết dưới results, không chép vào báo cáo.
+- Giữ nguyên đủ ý và thứ tự của checklist Phần 11 khi dịch, không đổi thành
+  khẳng định dự án đạt an toàn; ghi thêm giới hạn phép đo/semantic review ở
+  từng phần. Tích hợp Copilot Phần 10 chỉ là hướng mở rộng: bọc văn bản trước
+  run_llm(findings), gắn GuardDecision trong ai_runs.output_json khi fallback
+  run_local, giữ schema, không triển khai hoặc sửa dự án Copilot.
+- Kiểm thử dùng score/clock có kiểm soát để kiểm tra chi phí/query, threshold,
+  baseline miss, tính tổng Unicode và cluster CI; quick integration fit
+  classical thật, tái tính CSV từ hàng chi tiết, kiểm tra provenance, DPI,
+  report thiếu optional/live và phát hiện sửa CSV. Không dùng runtime timing
+  golden hoặc stub để tuyên bố hiệu năng transformer/LLM thật.

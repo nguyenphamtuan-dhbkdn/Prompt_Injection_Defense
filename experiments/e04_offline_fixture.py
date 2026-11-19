@@ -23,7 +23,12 @@ class FixtureClient:
         return "I cannot follow instructions overriding my rules."
 
 
-def generate_fixture(output_dir: Path, *, appendix_path: Path | None = None) -> Path:
+def generate_fixture(
+    output_dir: Path,
+    *,
+    appendix_path: Path | None = None,
+    config_path: Path = Path("configs/default.yaml"),
+) -> Path:
     """Exercise all techniques with fake translation, explicitly confined to fixture mode."""
     output_dir = results_path(output_dir)
     output_dir.mkdir(parents=True, exist_ok=True)
@@ -55,7 +60,7 @@ def generate_fixture(output_dir: Path, *, appendix_path: Path | None = None) -> 
     cache = output_dir / "e04_synthetic_translation_fixture.json"
     cache.write_text(json.dumps(steps, indent=2) + "\n", encoding="utf-8")
     return run(
-        Path("configs/default.yaml"),
+        config_path,
         output_dir,
         fixture=True,
         client=FixtureClient(),

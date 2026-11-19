@@ -1,6 +1,6 @@
 UV ?= uv
 
-.PHONY: setup test test-slow lint typecheck experiments transformer redteam figures report demo
+.PHONY: setup test test-slow lint typecheck experiments quick transformer redteam figures report demo
 
 setup:
 	$(UV) sync --locked --extra dev
@@ -18,7 +18,10 @@ typecheck:
 	$(UV) run mypy --strict src
 
 experiments:
-	$(UV) run python experiments/e01_baseline_classical_vs_transformer.py
+	$(UV) run python experiments/run_all.py
+
+quick:
+	$(UV) run python experiments/run_all.py --quick
 
 transformer:
 	$(UV) run --extra transformer python experiments/e01_transformer.py
@@ -26,6 +29,12 @@ transformer:
 redteam:
 	$(UV) run python experiments/e04_indirect_injection_vs_output_filter.py
 
-# Later milestones must replace these explicit failures with real implementations.
-figures report demo:
+figures:
+	$(UV) run python experiments/plotting.py
+	$(UV) run python experiments/plotting.py --quick
+
+report:
+	$(UV) run python experiments/report.py
+
+demo:
 	$(UV) run python -c "import sys; sys.exit('Target $@ is deferred beyond M0; see SPEC.md.')"

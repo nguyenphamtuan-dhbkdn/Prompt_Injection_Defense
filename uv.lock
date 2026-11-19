@@ -1968,6 +1968,7 @@ dependencies = [
     { name = "scikit-learn" },
     { name = "scipy" },
     { name = "seaborn" },
+    { name = "threadpoolctl" },
     { name = "tqdm" },
     { name = "typer" },
 ]
@@ -2015,6 +2016,7 @@ requires-dist = [
     { name = "scikit-learn", specifier = "==1.6.1" },
     { name = "scipy", specifier = "==1.15.3" },
     { name = "seaborn", specifier = "==0.13.2" },
+    { name = "threadpoolctl", specifier = "==3.8.0" },
     { name = "torch", marker = "extra == 'transformer'", specifier = "==2.7.1" },
     { name = "tqdm", specifier = "==4.67.1" },
     { name = "transformers", marker = "extra == 'transformer'", specifier = "==4.52.4" },

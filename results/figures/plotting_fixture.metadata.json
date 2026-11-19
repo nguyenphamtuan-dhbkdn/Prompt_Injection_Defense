@@ -1,0 +1,54 @@
+{
+  "config": {
+    "dpi": 300,
+    "font": "DejaVu Sans",
+    "quick": true
+  },
+  "seed": null,
+  "randomness": "none; rendering only, measurements are unchanged",
+  "git_commit": "f7aed5a6440ae19921eb8d8ee221e2a6898d94ca",
+  "git_dirty": true,
+  "versions": {
+    "matplotlib": "3.10.3"
+  },
+  "source_sha256": "b21781d630af109591841d382776ac59b519226c1fe8450b98e44043cfac3a89",
+  "input_sha256": {
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e01_classical.csv": "1f7414e29d4fbde1c02774a043c1ad64efed3a56607bbd89bd3a8ba84da4ee73",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e01_classical_fixture.csv": "549392582fe3b1b5eb14ce1658c9b68b033166eab9acc9c215ec7a85c2332df9",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e01_roc_curve.csv": "508ffe14957cde5827f00df441f6e9047baaf65aafb3b97eaa1fa390f495c12d",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e01_roc_curve_fixture.csv": "8b7493d768a8f3f85a73bcbd04bde004eda0d8fc23c5562bdcdef46234462803",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e01_transformer.csv": "04257b563c4386e222af4b9cfefc10991a462ce8033e49a5733d04ca9b68727c",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e02_bypass_rate.csv": "973177ae726c48e4a101de0ecbadfcc0fa775a4c9dd1472ab3ee051a85f65093",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e02_bypass_rate_fixture.csv": "5d8b724beb3e8ec09f03b8294ac8187d1cd17d26445a8c3a10285b874485d890",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e03_fpr.csv": "295ddb1855b4689f5271a84ec3ece976271906980ada66fc856ded2a62152fe7",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e03_fpr_fixture.csv": "8d8d6cac9b0a544d20c27a908bd7a1961eed46bdd705a24e600bb7f1b92defec",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e03_pr_curve.csv": "210917f8eed45952a3e4083d246b9b1d68ccf7d235d522c4fd23cf54849c35fb",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e03_pr_curve_fixture.csv": "5938dc6175603e5d05bef48ec47cf5fdf78afcefb6f48b0dd9e3ce80e8505b28",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e03_thresholds.csv": "c22da71d3679e7bcf3fb625202d78b05baa981eafa98c6600d258bb4c9991ba6",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e03_thresholds_fixture.csv": "b795d6034eb76ccc5ec2bdc7635b617a7c362944161535d484a1ade044c6e932",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e04_indirect_injection_vs_output_filter_fixture.csv": "15663d2b4085ab466654297bda2251b099123992abaebf1353c12a7cb5cb4533",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e05_latency_quick.csv": "cc633197b8f6f6e37a2ca43a0f46cc72b8a2245cfcb0867e7e95048a390707bc",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e05_latency_samples_quick.csv": "96912d0d37287a82bd1b81daad82cee12faa8dc49bfcb65ff35493adb66c4b14",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e06_robustness_quick.csv": "7b850cf86f2641acae9ebb66c39ca8ee01fe49d82a9d1a087eea840b5379e81a",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e06_search_quick.csv": "a56501a734d8d6eb6aa3b27f5d1dc74ac1f9309e5a4f979bd83f9cc0a7019105",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\m5_predictions.csv": "34c3170fc28d280bc3f48441d310668d060531ff87daac6bc058922e0e997c4f",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\m5_predictions_fixture.csv": "1afcfdfc92f50301cebab6a556d7093d16120d58f0045a6317cfff5950008593"
+  },
+  "artifact_sha256": {
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e01_baseline_fixture.png": "f95024b94ba966c589eb5f062bb206d77f25a81a6b0dab34aaab37885a39385f",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e01_baseline_fixture.pdf": "d0dfd1fb4ca7f9bdcfa89543b35111d8a686b0a47ad96f072f1e5acc9e84a4e8",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e01_roc_curve_fixture.csv": "8b7493d768a8f3f85a73bcbd04bde004eda0d8fc23c5562bdcdef46234462803",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e01_roc_fixture.png": "cb525ec1a22876fb7238644a517cbf96735214c199bef4e20b578a4fe6d7fdd9",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e01_roc_fixture.pdf": "0fdea12c768fb7cffc1afaef9c42c15d5ff713d8ece27890d40bf284ef350dff",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e02_bypass_rate_fixture.png": "9c8b13923001ff6dd9d98e09a9676f41619ac23176a8ad65cbda70fc2c666154",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e02_bypass_rate_fixture.pdf": "b4c23a08d78b59a91dbf3a88e58d76b3b6f19d2cbcc550f79f3db41bed8a44e6",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e03_precision_recall_fixture.png": "baab6689665ebd10d82fa0c3c9ca143b5125fc38f43fe6915aae281703c43f0e",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e03_precision_recall_fixture.pdf": "f99a92de444848d2e9a5830ab30ecbbad00a20c3162ea11456fa8c8585c459ec",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e04_violation_fixture.png": "a3f55a3a6badafb43d78a196025bbdf4139a1e941679cd9366a8bedda15816bd",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e04_violation_fixture.pdf": "49144303066f4dd02b9000b130f6a4d4a4fb63b438caaff30ac2005120002802",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e05_latency_quick.png": "4957bba027c1545a6f0143429b3bed1421e2d3ed01a010fa0461a21fa1e12efd",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e05_latency_quick.pdf": "bbeaebdc9a283564b7613e9e82d19f640793a23853494b4dfd0476ea9ad61c81",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e06_robustness_quick.png": "d571fd90fcda6771b4442aef1ed3473869f8f09882340313d034b33c231872d4",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e06_robustness_quick.pdf": "6a61fd641ceab4eccb49ec92b92f81dbff17e60e317e8dfbd03c14e1004192de"
+  }
+}

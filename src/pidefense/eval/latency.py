@@ -2,9 +2,11 @@
 
 from collections.abc import Sequence
 from dataclasses import dataclass
+from math import isfinite
 from time import perf_counter_ns
 
 import numpy as np
+from numpy.random import Generator
 
 from pidefense.models.registry import Detector
 
@@ -19,6 +21,49 @@ class LatencyReport:
     p95_ms: float
     warmup: int
     repeats: int
+
+
+@dataclass(frozen=True)
+class LatencyInterval:
+    """Percentile bootstrap CI for mean latency, clustering repeated timings by input."""
+
+    mean_ci_low_ms: float
+    mean_ci_high_ms: float
+    confidence: float
+    n_bootstrap: int
+    n_texts: int
+
+
+def bootstrap_latency(
+    report: LatencyReport, rng: Generator, *, n_bootstrap: int = 2000, confidence: float = 0.95
+) -> LatencyInterval:
+    """Resample input clusters with replacement, retaining all repeats for each input.
+
+    Sampling repeated calls independently would overstate effective sample size.
+    This CI describes input-mix uncertainty conditional on observed timings, not
+    training, hardware, operating-system scheduling or temporal autocorrelation.
+    NumPy linear quantiles give the equal-tailed percentile interval.
+    """
+    if type(n_bootstrap) is not int or n_bootstrap < 1:
+        raise ValueError("n_bootstrap must be a positive integer")
+    if not isfinite(confidence) or not 0 < confidence < 1:
+        raise ValueError("confidence must be finite and between zero and one")
+    if (
+        type(report.repeats) is not int
+        or report.repeats < 1
+        or not report.samples_ms
+        or len(report.samples_ms) % report.repeats
+        or any(not isfinite(t) or t < 0 for t in report.samples_ms)
+    ):
+        raise ValueError("Latency samples must be finite, nonnegative and match repeats")
+    means = np.asarray(report.samples_ms).reshape(report.repeats, -1).mean(axis=0)
+    estimates = [
+        float(np.mean(means[rng.integers(0, len(means), size=len(means))]))
+        for _ in range(n_bootstrap)
+    ]
+    alpha = (1 - confidence) / 2
+    low, high = np.quantile(estimates, [alpha, 1 - alpha])
+    return LatencyInterval(float(low), float(high), confidence, n_bootstrap, len(means))
 
 
 def measure_latency(
@@ -43,6 +88,10 @@ def measure_latency(
             detector.predict(text)
             timings.append((perf_counter_ns() - start) / 1_000_000)
     return LatencyReport(
-        tuple(timings), float(np.mean(timings)), float(np.median(timings)),
-        float(np.percentile(timings, 95)), warmup, repeats,
+        tuple(timings),
+        float(np.mean(timings)),
+        float(np.median(timings)),
+        float(np.percentile(timings, 95)),
+        warmup,
+        repeats,
     )

@@ -1,0 +1,183 @@
+{
+  "config": {
+    "seed": 20260119,
+    "data": {
+      "dataset_name": "deepset/prompt-injections",
+      "benign_corpus_path": "data\\benign_corpus\\benign_queries.csv",
+      "test_fraction": 0.2,
+      "val_fraction": 0.1
+    },
+    "classical_model": {
+      "vectorizer": "tfidf_combo",
+      "classifier": "logreg"
+    },
+    "transformer_model": {
+      "base_model": "distilbert-base-uncased",
+      "max_length": 128,
+      "epochs": 3,
+      "batch_size": 16
+    },
+    "attack": {
+      "techniques": [
+        "base64",
+        "leetspeak",
+        "zero_width",
+        "translate",
+        "indirect",
+        "multiturn"
+      ]
+    },
+    "middleware": {
+      "guard_threshold": 0.5,
+      "ollama_model": "phi3:mini",
+      "ollama_host": "http://localhost:11434"
+    }
+  },
+  "seed": 20260119,
+  "quick": true,
+  "fixture_only": true,
+  "git_commit": "f7aed5a6440ae19921eb8d8ee221e2a6898d94ca",
+  "git_dirty": true,
+  "versions": {
+    "numpy": "2.2.6",
+    "scikit-learn": "1.6.1",
+    "matplotlib": "3.10.3",
+    "threadpoolctl": "3.8.0"
+  },
+  "python": "3.11.18",
+  "stages": [
+    {
+      "stage": "E01_classical",
+      "status": "completed"
+    },
+    {
+      "stage": "E01_transformer_training",
+      "status": "separate_optional_M3_command"
+    },
+    {
+      "stage": "E02_E03",
+      "status": "completed"
+    },
+    {
+      "stage": "E04",
+      "status": "synthetic_fixture_not_live"
+    },
+    {
+      "stage": "E05_E06",
+      "status": "completed"
+    }
+  ],
+  "randomness": "one config-seeded Generator per independently reproducible experiment",
+  "artifact_sha256": {
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\.gitkeep": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e01_classical.csv": "1f7414e29d4fbde1c02774a043c1ad64efed3a56607bbd89bd3a8ba84da4ee73",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e01_classical.metadata.json": "74b5580a659845114e0df136e9381b7ab9ed02fbaa09a834b62c99254e76e4a6",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e01_classical_fixture.csv": "549392582fe3b1b5eb14ce1658c9b68b033166eab9acc9c215ec7a85c2332df9",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e01_classical_fixture.metadata.json": "eb8cda2c68a63a3835814d5b1ae849a170376d1a7714e33f1f3628a312f54310",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e01_roc_curve.csv": "508ffe14957cde5827f00df441f6e9047baaf65aafb3b97eaa1fa390f495c12d",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e01_roc_curve_fixture.csv": "8b7493d768a8f3f85a73bcbd04bde004eda0d8fc23c5562bdcdef46234462803",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e01_transformer.csv": "04257b563c4386e222af4b9cfefc10991a462ce8033e49a5733d04ca9b68727c",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e01_transformer.metadata.json": "0e423a0ed0830098733016d2a201e92e719382126da064e64efb98a275f642c6",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e02_bypass_rate.csv": "973177ae726c48e4a101de0ecbadfcc0fa775a4c9dd1472ab3ee051a85f65093",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e02_bypass_rate.metadata.json": "cf2df7508db712c0596b251af0f3a05ad79c1b78d3915936c0e0c402b60a5e77",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e02_bypass_rate_fixture.csv": "5d8b724beb3e8ec09f03b8294ac8187d1cd17d26445a8c3a10285b874485d890",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e02_bypass_rate_fixture.metadata.json": "a037111cc8944bcc6748ab866a86fc7a07fd3922a3399f3514e9fff4773b03ef",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e03_fpr.csv": "295ddb1855b4689f5271a84ec3ece976271906980ada66fc856ded2a62152fe7",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e03_fpr.metadata.json": "cf2df7508db712c0596b251af0f3a05ad79c1b78d3915936c0e0c402b60a5e77",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e03_fpr_fixture.csv": "8d8d6cac9b0a544d20c27a908bd7a1961eed46bdd705a24e600bb7f1b92defec",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e03_fpr_fixture.metadata.json": "a037111cc8944bcc6748ab866a86fc7a07fd3922a3399f3514e9fff4773b03ef",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e03_operating_thresholds.md": "232c51d3cc0091497bc1ceec77bae75f4bb2ade3407c2e930becdf6e579f78a0",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e03_operating_thresholds_fixture.md": "76c98eb4dc0a9abacfce9de5d0a883b425fe100f57a5c8687eec483069dd9d8a",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e03_pr_curve.csv": "210917f8eed45952a3e4083d246b9b1d68ccf7d235d522c4fd23cf54849c35fb",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e03_pr_curve_fixture.csv": "5938dc6175603e5d05bef48ec47cf5fdf78afcefb6f48b0dd9e3ce80e8505b28",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e03_thresholds.csv": "c22da71d3679e7bcf3fb625202d78b05baa981eafa98c6600d258bb4c9991ba6",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e03_thresholds_fixture.csv": "b795d6034eb76ccc5ec2bdc7635b617a7c362944161535d484a1ade044c6e932",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e04_indirect_injection_vs_output_filter_fixture.csv": "15663d2b4085ab466654297bda2251b099123992abaebf1353c12a7cb5cb4533",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e04_indirect_injection_vs_output_filter_fixture.metadata.json": "3425af754c58f593962083ef8284250b4f853d4a8eef61a5b56595e45113718a",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e05_latency_quick.csv": "cc633197b8f6f6e37a2ca43a0f46cc72b8a2245cfcb0867e7e95048a390707bc",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e05_latency_quick.metadata.json": "6db6a6de40565b0545dd94896e64ed606aa1715d6ea078154b34dd5db19fa37f",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e05_latency_samples_quick.csv": "96912d0d37287a82bd1b81daad82cee12faa8dc49bfcb65ff35493adb66c4b14",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e06_examples_quick.json": "a5338d955b09046ec0b16f3a9625b7955c763aae07dc722e474e6078745f932f",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e06_robustness_quick.csv": "7b850cf86f2641acae9ebb66c39ca8ee01fe49d82a9d1a087eea840b5379e81a",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e06_robustness_quick.metadata.json": "6db6a6de40565b0545dd94896e64ed606aa1715d6ea078154b34dd5db19fa37f",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\e06_search_quick.csv": "a56501a734d8d6eb6aa3b27f5d1dc74ac1f9309e5a4f979bd83f9cc0a7019105",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\m5_predictions.csv": "34c3170fc28d280bc3f48441d310668d060531ff87daac6bc058922e0e997c4f",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\tables\\m5_predictions_fixture.csv": "1afcfdfc92f50301cebab6a556d7093d16120d58f0045a6317cfff5950008593",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\.gitkeep": "7eb70257593da06f682a3ddda54a9d260d4fc514f645237f5ca74b08f8da61a6",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e01_baseline.pdf": "899dac3cae88c5fca4bf4e90bedf23133ba2c6d4e1a419ffe68d57751ff981c8",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e01_baseline.png": "005f8ac1241ad689df7f8f6f7b9fc3703c10bc538ad39e289001988bd6b0339d",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e01_baseline_fixture.pdf": "d0dfd1fb4ca7f9bdcfa89543b35111d8a686b0a47ad96f072f1e5acc9e84a4e8",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e01_baseline_fixture.png": "f95024b94ba966c589eb5f062bb206d77f25a81a6b0dab34aaab37885a39385f",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e01_roc.pdf": "5321ec8d2f949319b3a3f34a89a52f784882025609b07d6d1ab3e673ce723197",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e01_roc.png": "9dc4c8c65b1e362470dc543b29af81b70bcf7068b54b55e5dbbf0e2d23c828c2",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e01_roc_fixture.pdf": "0fdea12c768fb7cffc1afaef9c42c15d5ff713d8ece27890d40bf284ef350dff",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e01_roc_fixture.png": "cb525ec1a22876fb7238644a517cbf96735214c199bef4e20b578a4fe6d7fdd9",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e02_bypass_rate.pdf": "926c966836b37c8e44905dccedf7fec78672fe391c849b7cc54fc45fcb603e1d",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e02_bypass_rate.png": "506d4d4eaa4d3419b1350fb0aa0d03baf19cd0b5969cc1fb9f215f3bf2d41e69",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e02_bypass_rate_fixture.pdf": "b4c23a08d78b59a91dbf3a88e58d76b3b6f19d2cbcc550f79f3db41bed8a44e6",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e02_bypass_rate_fixture.png": "9c8b13923001ff6dd9d98e09a9676f41619ac23176a8ad65cbda70fc2c666154",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e03_precision_recall.pdf": "5387bdc3d63c9f8e51c54a42f571895d1b35e84d0dba16582f0ed5d4f8d592ec",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e03_precision_recall.png": "6ed9b522addc17aadd853c524a8e280e02ec298dcbb638e47b63130f268814e5",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e03_precision_recall_fixture.pdf": "f99a92de444848d2e9a5830ab30ecbbad00a20c3162ea11456fa8c8585c459ec",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e03_precision_recall_fixture.png": "baab6689665ebd10d82fa0c3c9ca143b5125fc38f43fe6915aae281703c43f0e",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e04_violation_fixture.pdf": "49144303066f4dd02b9000b130f6a4d4a4fb63b438caaff30ac2005120002802",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e04_violation_fixture.png": "a3f55a3a6badafb43d78a196025bbdf4139a1e941679cd9366a8bedda15816bd",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e05_latency_quick.pdf": "bbeaebdc9a283564b7613e9e82d19f640793a23853494b4dfd0476ea9ad61c81",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e05_latency_quick.png": "4957bba027c1545a6f0143429b3bed1421e2d3ed01a010fa0461a21fa1e12efd",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e06_robustness_quick.pdf": "6a61fd641ceab4eccb49ec92b92f81dbff17e60e317e8dfbd03c14e1004192de",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\e06_robustness_quick.png": "d571fd90fcda6771b4442aef1ed3473869f8f09882340313d034b33c231872d4",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\plotting.metadata.json": "98098fea2b0cdfa02bf0c0c92c583798f8303c3f6fb0d4832a0d8574d10301c5",
+    "C:\\Users\\Tuan\\learn\\Prompt_Injection_Defense\\results\\figures\\plotting_fixture.metadata.json": "9c8ba16573474f27d43d726657c363fd8daf4a84038398ec09f52c0c83e8790f"
+  },
+  "source_sha256": {
+    "experiments\\e01_baseline_classical_vs_transformer.py": "3a91dd4925315f8f5ae68fe886e6ec4240a8bba7c9df8be5acf84fa13394124b",
+    "experiments\\e01_transformer.py": "97df97b6986cfd22ca0060bba51d67d946f9a634359c2be1c222f60dcf356411",
+    "experiments\\e02_obfuscation_bypass_rate.py": "dbe43d0df80d192923443b8aaea44fe2b81cd82ce0b516d82ac3c589e3aea128",
+    "experiments\\e03_benign_false_positive_rate.py": "a3552586c7e274b0fcab9305584f48b54a67a00315248d5dbf5f6d8a59b8d936",
+    "experiments\\e04_indirect_injection_vs_output_filter.py": "c44c19fa423b4057751053812f45ba326b993179eb30a0ee270d916b980e124b",
+    "experiments\\e04_offline_fixture.py": "8a0b98493f0a453e2a2af36f5f3504b3240db49dd6ca6b67e0180a693da63763",
+    "experiments\\e05_latency_classical_vs_transformer.py": "d32bb45fd987445653f3ebb701550219698710c58e0378616ad0d9775fdcd3a2",
+    "experiments\\e06_adversarial_robustness.py": "255eef6ceae890c773cc141697166af81ffaceb673ded9f43d94492828c4eda6",
+    "experiments\\m5_evaluation.py": "d92ce24c70547fba5918be915cdea8959cf8442111a1c8916cec9810834c5e03",
+    "experiments\\m8_evaluation.py": "e41589d83ea1623036f607bad2f42de5c7eda826765161011d141c2252fc76d3",
+    "experiments\\plotting.py": "b21781d630af109591841d382776ac59b519226c1fe8450b98e44043cfac3a89",
+    "experiments\\prepare_m1_sample.py": "42a3b090f0f412f575196d799c73ade7690e1887cc41190f42fcb681e5521020",
+    "experiments\\report.py": "c914d48ab76dc68a4e34018876c9c24d52c534d93ddbf3701d80a2ab07c43fbb",
+    "experiments\\run_all.py": "aeaa4c5ba08cd2e7617eac86d73a7923a737694592c5ec5ea6010be28072b2bc",
+    "src\\pidefense\\__init__.py": "58132d496b58b0ec93d2348df0a2cff84b2cfb63ef5803aa25e48fa94337caa7",
+    "src\\pidefense\\attacks\\__init__.py": "e09f27c1177a0203369c5e2297b3aec904fc6d52f384479f3f5e27428cc7aeda",
+    "src\\pidefense\\attacks\\common.py": "6ebb06a7a6b551ba3e84ed3c79f41a7ec71355b0b182694a372f141331f745ca",
+    "src\\pidefense\\attacks\\direct.py": "39ae67a9743e1436dfd951e962114d37514e06950df6c603147065f374e87f21",
+    "src\\pidefense\\attacks\\indirect.py": "41e0e13f2a33b05063cd4dce19c46c4c24d357308d099fbbaf509ba5749de773",
+    "src\\pidefense\\attacks\\multiturn.py": "74059a3df431ad66a02eade6342734d443c50cc08af07b39d7c81e1b0525a0da",
+    "src\\pidefense\\attacks\\obfuscate.py": "20225029e42eb53490259e98e0789e9f9345109a13773d5cbe89848af64cb31f",
+    "src\\pidefense\\attacks\\perturb.py": "661e67dfe6492c0c2cbc1aa84964a369a506a4c07264bab5ec611825ceda8d18",
+    "src\\pidefense\\cli.py": "1dd4d33e222638813c6a2bea6b73f4b55e1db95e4bfe70e7e7aeefb4c20d16ce",
+    "src\\pidefense\\config.py": "2798c20939af903c80fefa20736a8f06320119df44694d9c624d5820b3098a8d",
+    "src\\pidefense\\data\\__init__.py": "3dd4415841f87ebcf7579bbbe28413d975eba4a940a44ff580b748fccb4bb5b4",
+    "src\\pidefense\\data\\loader.py": "f2723d3955db7b2c80007d232bda03952f708e030b8a3456a2cde02581974e38",
+    "src\\pidefense\\data\\schema.py": "5c4f6f21dca181e2d01f1ec7f86dc04771c8c4a24498fae8f54c29245f00ddd8",
+    "src\\pidefense\\data\\splits.py": "c9e6980a47d22e951c81dea5b95891231c53d684b0a81a9c937766cf8d129bb2",
+    "src\\pidefense\\demo\\__init__.py": "12311a8fabb621a8524d6841b53469e5a30ea83b0d1394ea47fa64aedf85f6cb",
+    "src\\pidefense\\demo\\chatbot_demo.py": "12a7b926d85700a957a65501fe95bba7318c61192bdc09fe447c431d9b9219eb",
+    "src\\pidefense\\demo\\ollama_client.py": "a4d68fa083124421d80243510cd10692b60958f91ea81b94ac5980c1b60da453",
+    "src\\pidefense\\eval\\__init__.py": "454217d51598396412026c7d538bdd4f4dac0c2a956c1f75f3345d2f14761156",
+    "src\\pidefense\\eval\\bypass_rate.py": "712a9eae07e91882b571f165f849ab31a2e62a11b7d012704cf8dc79b8b87576",
+    "src\\pidefense\\eval\\latency.py": "61e3546a01fde673f3046438fb36766c208e116f08c088113836b82cf1cf2fdb",
+    "src\\pidefense\\eval\\metrics.py": "40732442dcce5ad0a89c9ec2a6aba2d5e5fc0b0a1e3c6370b6ad01a0c7bc7fe1",
+    "src\\pidefense\\eval\\robustness.py": "b7ab04e3dd0f3a71e5b2ef086560f84ab7131305de26dcf31ac766c73cc36368",
+    "src\\pidefense\\features\\__init__.py": "454217d51598396412026c7d538bdd4f4dac0c2a956c1f75f3345d2f14761156",
+    "src\\pidefense\\features\\embeddings.py": "12a7b926d85700a957a65501fe95bba7318c61192bdc09fe447c431d9b9219eb",
+    "src\\pidefense\\features\\tfidf.py": "a76333aba008b9c818af9f01e4792cc5e1c75912e05c3eec50a01664c60a50d6",
+    "src\\pidefense\\middleware\\__init__.py": "ad3bb6ce7c76261d1ee2819b7477e373def0dad066d6a35ac332297a5471ae82",
+    "src\\pidefense\\middleware\\classifier_guard.py": "7279fb03118916f6bdc47666e6b1831d614d4b60e6ac1e80c4539cb0a5d90cca",
+    "src\\pidefense\\middleware\\output_filter.py": "fa7867ff2bd8ad9f9ce11a543525264c44c633c6489a01f9493edccc3dabc2cc",
+    "src\\pidefense\\middleware\\pipeline.py": "17e0ac94e1e2875a456ce9899983dac22e287f60820c40e8c3ae4597d66c6232",
+    "src\\pidefense\\middleware\\system_prompt.py": "37fd21b4466dd7e1031ff9b42ddce86135eefb089e51f689d7a1faff9200f793",
+    "src\\pidefense\\models\\__init__.py": "454217d51598396412026c7d538bdd4f4dac0c2a956c1f75f3345d2f14761156",
+    "src\\pidefense\\models\\classical.py": "b75c03bc4129ac1dd0cc996872e501b5c57fc0b3b19fb0df2229be70fdac3bf0",
+    "src\\pidefense\\models\\registry.py": "e5b851c6b4cf590cb66ee5cd6aa563fdc4584cdf48378b432c1fc76ea9e45a73",
+    "src\\pidefense\\models\\transformer.py": "71cae4d917111c131bed70aa388fc5e92ebe75fdfea9eb5d8715f1dde31a1fe9",
+    "src\\pidefense\\rng.py": "dbf58b498d7b5a80634015006d4d9f4c7901f57c25743640b95abd1bb676273c"
+  }
+}

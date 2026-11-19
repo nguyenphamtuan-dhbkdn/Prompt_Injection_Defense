@@ -1,0 +1,5 @@
+model,status,threshold,n_injections,n_eligible,n_already_benign,n_flipped,flip_rate,minimum_observed_budget,median_successful_budget,max_budget,max_queries
+logreg,evaluated,0.5,6,6,0,0,0.0,,,3,24
+svm,evaluated,0.5,6,6,0,0,0.0,,,3,24
+rf,evaluated,0.27,6,6,0,0,0.0,,,3,24
+distilbert,not_requested_optional_checkpoint,,,,,,,,,,

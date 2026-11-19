@@ -290,6 +290,77 @@ $env:PIDEFENSE_PREPARED_CACHE = $cachePath
 uv run pytest tests/integration/test_redteam.py -m slow --no-cov
 ```
 
+## M8: robustness, latency và báo cáo tái lập
+
+Chạy nhanh hoàn toàn ngoại tuyến bằng PowerShell (không cần torch/Ollama):
+
+```powershell
+uv run python experiments/run_all.py --quick
+# Tương đương helper Windows:
+.\tasks.ps1 quick
+```
+
+Quick chạy E01, E02/E03, E04 mô phỏng và E05/E06 trên fixture thật đã commit.
+Kết quả nhỏ giữ hậu tố `_fixture` hoặc `_quick`, không thay thế kết quả tập
+đầy đủ. E04 dùng canned replies và dịch tổng hợp, không đánh giá LLM/dịch thật.
+`results/tables/run_all_quick.json` ghi trạng thái từng stage và provenance;
+`docs/bao_cao.md` tự lắp bảng/hình và phần thiếu, gồm checklist hạn chế và ghi
+chú Copilot. Số đo không được gõ bằng tay trong báo cáo.
+
+Chạy tập đầy đủ từ nguồn/cache ghim, rồi thêm checkpoint/live nếu đã có:
+
+```powershell
+uv run python experiments/run_all.py --prepared-cache $cachePath
+# Tùy chọn, cần extra transformer đã cài và checkpoint M3 hợp lệ:
+uv run --extra transformer python experiments/run_all.py --prepared-cache $cachePath --checkpoint results/tables/e01_transformer_model
+# Tùy chọn gọi demo Ollama cục bộ, sau đó review thủ công theo hướng dẫn M7:
+uv run python experiments/run_all.py --prepared-cache $cachePath --live-ollama
+# Có thể thêm --translation-cache data/local_translation_steps.json khi có bản dịch thật.
+```
+
+Full runner không tự tải/huấn luyện transformer hoặc bật chatbot sống.
+M3 vẫn dùng entry point riêng ở trên; `--checkpoint` xác minh split/config/hash
+trước khi đánh giá. Khi không chọn checkpoint, CSV có hàng optional với metric
+để trống. Không ghép timing M3 cũ và timing classical mới làm đối chứng.
+
+Hai entry point E05/E06 dùng chung fit/threshold/RNG và sinh cả hai nhóm output:
+
+```powershell
+uv run python experiments/e05_latency_classical_vs_transformer.py --quick
+uv run python experiments/e06_adversarial_robustness.py --quick
+# Chỉ vẽ/lắp báo cáo từ dữ liệu đã lưu, không gọi LLM hoặc đo lại:
+uv run python experiments/plotting.py
+uv run python experiments/plotting.py --quick
+uv run python experiments/report.py
+```
+
+E05 lưu từng timing/source/repeat trong `e05_latency_samples*.csv`; bảng
+`e05_latency*.csv` chứa mean/median/p95 và CI mean bootstrap theo cụm input,
+giữ toàn bộ lần lặp. Dùng cùng input và cấu hình CPU/thread giữa các model;
+load/train/warmup nằm ngoài thời gian đo. CI không đại diện nhiễu hệ điều
+hành, hardware khác hoặc train; timing thay đổi giữa các lần chạy. Chưa có
+SLO/workload vận hành nên chưa kết luận phù hợp guard đồng bộ.
+
+E06 lưu từng search trong `e06_search*.csv`, tổng hợp trong
+`e06_robustness*.csv`; candidate thành công (nếu có) ở JSON dưới results/.
+Budget = từ thay thế + từ thêm bởi preamble. Tìm theo chi phí tăng dần trong
+family/query hữu hạn; minimum chỉ là nhỏ nhất đã quan sát. Nguồn ban đầu đã
+lọt ghi riêng, không tính flip mới. Không thấy flip để trống minimum, không
+coi là chứng minh robust. Đồng nghĩa có thể đổi ngữ nghĩa; classifier flip
+chưa phải tấn công chatbot thành công và cần duyệt độc lập.
+
+Manifest, metadata cạnh CSV và `report_data.json` cho phép truy nguồn số đo,
+split, commit, phiên bản và hash. Các hình dùng chung style, có PNG/PDF;
+renderer giữ provenance mới khi vẽ lại hình cũ, không thay số đo. Report
+luôn phân biệt số đo tập đầy đủ, quick và mô phỏng. E04 live/nhận định người
+duyệt vẫn cần hoàn thành riêng khi có Ollama, không được thay bằng fixture.
+
+```powershell
+uv run ruff check .
+uv run mypy --strict src
+uv run pytest
+```
+
 ## Phạm vi và giới hạn
 
 Đây là dự án nghiên cứu, chưa phải hệ thống an toàn dùng trong sản phẩm.
