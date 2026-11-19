@@ -163,3 +163,60 @@
   Coverage mặc định vẫn áp toàn src; không loại code transformer khỏi mẫu số.
 - Mọi kết quả chỉ phục vụ nghiên cứu: truncation có thể bỏ phần chỉ dẫn nguy
   hiểm; softmax chưa hiệu chỉnh; F1 tổng hợp cao vẫn có thể bỏ lọt tấn công.
+
+## Quyết định M4
+
+- Chỉ triển khai generator trong `src/pidefense/attacks/` và kiểm thử; chưa
+  triển khai E2, bypass rate, middleware, CLI hoặc gửi yêu cầu tới chatbot.
+  Mỗi tệp nguồn trong gói bắt đầu bằng chú thích authorized-testing-only.
+- Giữ hàm biến đổi chuỗi theo Phần 6. `generate_variant(sample, technique,
+  rng, ...)` nhận hàng nhãn injection và trả `AttackVariant` bất biến, giữ
+  `source`, `source_id`, nhãn, technique, text và tuple turns. Không sửa hàng
+  nguồn; direct lấy nguyên văn hàng có nhãn. Trường chứa raw text không xuất
+  hiện trong repr của variant. Generator không ghi log, tệp hoặc gọi mạng.
+- Giới hạn payload đầu vào theo code point bằng `MAX_PAYLOAD_LENGTH` trong
+  `attacks/common.py`; rỗng, sai kiểu hoặc quá dài gây ValueError không chứa
+  raw text. Whitespace, control character và Unicode đều hợp lệ ở cấp hàm
+  chuỗi, dù schema dữ liệu chỉ chấp nhận hàng có nội dung. Carrier và các
+  bước dịch cũng được giới hạn để tránh đầu ra backend không hợp lệ.
+- Base64 gồm lời dẫn cố định `BASE64_PREFIX` và phần Base64 chuẩn của UTF-8;
+  giải mã phần sau prefix để lấy payload. `surrogatepass` cho phép round-trip
+  cả lone surrogate trong chuỗi Python; không khẳng định surrogate là Unicode
+  hợp lệ để gửi chatbot. Leetspeak thay từng ký tự theo bảng cố định, lấy mẫu
+  bằng Generator được truyền vào; nếu không trúng ký tự nào thì ép một phép
+  thay. Nếu không có ký tự phù hợp thì thêm khoảng trắng để thỏa acceptance
+  luôn khác đầu vào; fallback này không đại diện obfuscation có ý nghĩa.
+- Zero-width chèn một U+200B tại biên lấy mẫu bằng cùng Generator, kể cả biên
+  đầu/cuối để hỗ trợ chuỗi một ký tự. Không xóa hoặc chuẩn hóa nội dung nguồn;
+  xóa toàn bộ U+200B không phải phép đảo chính xác nếu nguồn đã có U+200B.
+- Dịch round-trip dùng `Translator` callable được inject rõ ràng, với hợp
+  đồng `(text, source_lang, target_lang) -> str`, thứ tự en→vi→en mặc định.
+  Người dùng cung cấp backend dịch cục bộ; M4 không đóng gói mô hình dịch,
+  không tự tải dependency hoặc dùng dịch vụ mạng. Thiếu backend, lỗi, đầu
+  ra rỗng/quá dài/sai kiểu hoặc round-trip không đổi: trả chuỗi gốc;
+  wrapper đánh dấu skipped với lý do cố định, không tính là biến thể thành
+  công. Backend phải tránh log nội dung và dùng RNG của lần chạy nếu cần.
+  Kiểm thử dùng backend giả để xác minh routing/fallback, không dùng nó để
+  tuyên bố chất lượng dịch thật. Backend chặn lâu cần tự có timeout.
+- Indirect thay đúng một marker `{payload}` theo nghĩa literal; giữ nguyên
+  các dấu ngoặc khác, không format hoặc diễn giải payload. Carrier mặc định
+  gồm yêu cầu tóm tắt và tài liệu chứa nguyên văn payload. Không cho carrier
+  chỉ có marker vì sẽ tạo phép biến đổi đồng nhất.
+- Multi-turn chỉ hỗ trợ hai hoặc ba lượt, chia code point liên tiếp cân
+  bằng, không strip whitespace; ghép lại đúng chuỗi gốc. Từ chối nguồn ngắn
+  hơn số lượt thay vì tạo lượt rỗng. `variant.turns` là dữ liệu hội thoại có
+  thứ tự; `variant.text` chỉ là phép ghép để truy nguồn, không thay thế việc
+  gửi từng lượt trong harness ở mốc sau. Không khẳng định từng lượt là benign.
+- Spot-check phương pháp với yêu cầu tóm tắt lành: bảng leetspeak chỉ đổi
+  ký tự cho phép, không đảo thứ tự hoặc bỏ từ; Base64 và splitting khôi phục
+  chính xác; indirect giữ nguyên payload, zero-width chỉ chèn ký tự. Kiểm
+  thử kiểm tra thêm các bất biến này trên hàng injection từ fixture có nguồn.
+  Đây là kiểm tra cấu trúc và xem xét định tính phương pháp, không chứng minh
+  bảo toàn ngữ nghĩa trước LLM. Dịch thật cần duyệt thủ công riêng khi cung
+  cấp backend; leetspeak, ký tự ẩn và ngữ cảnh tài liệu có thể đổi cách LLM
+  hiểu chỉ dẫn. Chưa đo bypass hoặc tuyên bố hiệu quả an toàn ở M4.
+- Hypothesis kiểm tra ASCII/Unicode kể cả surrogate, tính khác/không rỗng,
+  round-trip Base64, độ dài zero-width và tổng tính của nhánh dịch offline.
+  Tắt example database để không lưu raw payload ngoài data/results; dùng
+  derandomize cho dữ liệu kiểm thử tái lập. Ngẫu nhiên của generator sản phẩm
+  luôn đi qua `SimRNG.generator`, không tạo stream riêng trong transform.
