@@ -17,6 +17,9 @@ lint:
 typecheck:
 	$(UV) run mypy --strict src
 
+experiments:
+	$(UV) run python experiments/e01_baseline_classical_vs_transformer.py
+
 # Later milestones must replace these explicit failures with real implementations.
-experiments figures report demo:
+figures report demo:
 	$(UV) run python -c "import sys; sys.exit('Target $@ is deferred beyond M0; see SPEC.md.')"

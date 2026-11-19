@@ -85,7 +85,7 @@ class DataConfig:
 
 @dataclass(frozen=True)
 class ClassicalModelConfig:
-    """Select a TF-IDF representation and classical classifier; no training in M0."""
+    """Select a TF-IDF representation and classical classifier."""
 
     vectorizer: Vectorizer = "tfidf_combo"
     classifier: Classifier = "logreg"

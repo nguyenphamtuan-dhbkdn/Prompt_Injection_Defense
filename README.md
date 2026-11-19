@@ -1,9 +1,9 @@
 # PI-DEFENSE
 
 Dự án nghiên cứu và đánh giá phòng thủ trước prompt injection. Hiện chỉ có
-M0–M1: cấu hình YAML, bộ sinh số ngẫu nhiên có seed, tải dữ liệu và chia tập
-phân tầng. Các mô-đun mô hình, tấn công, middleware và thí nghiệm đánh giá
-vẫn là vị trí dành sẵn; chưa có huấn luyện hay kết quả đánh giá.
+M0–M2: cấu hình YAML, RNG có seed, tải/chia dữ liệu, TF-IDF và các bộ phân loại
+Logistic Regression, Linear SVM, Random Forest. Các mô-đun transformer,
+tấn công và middleware vẫn là vị trí dành sẵn.
 
 ## Chạy trên Windows PowerShell
 
@@ -30,7 +30,7 @@ Trên máy có GNU Make: `make setup`, `make lint`, `make typecheck`, `make test
 để cài editable theo đúng lockfile, kể cả phụ thuộc bắc cầu. Lệnh
 `uv pip install -e ".[dev]"` phía trên cũng được hỗ trợ; `uv run` sẽ đồng bộ
 phần phụ thuộc runtime với lockfile khi cần.
-Các đích `experiments`, `figures`, `report`, `demo` báo chưa triển khai ở M0.
+Đích `experiments` chạy E01 classical; `figures`, `report`, `demo` chưa triển khai.
 Kiểm thử `slow` mặc định bị bỏ qua; chọn bằng `uv run pytest -m slow` khi
 các mốc tiếp theo bổ sung chúng. Chọn kiểm thử thống kê bằng
 `uv run pytest -m statistical` khi đã có kiểm thử tương ứng.
@@ -74,7 +74,47 @@ giữ riêng để đánh giá báo sai, có nguồn `student-curated, not scrap
 
 Phiên bản thư viện được ghim trong `pyproject.toml`; `uv.lock` cố định phần
 phụ thuộc bắc cầu cho `uv run`. Không cài các extra `transformer`, `demo`,
-`translate` để chạy M0. Cache của uv nằm trong `.uv-cache` của dự án.
+`translate` để chạy M0–M2. Cache của uv nằm trong `.uv-cache` của dự án.
+
+## Baseline M2
+
+```powershell
+uv run python experiments/e01_baseline_classical_vs_transformer.py
+Import-Csv results/tables/e01_classical.csv | Format-Table
+# Tương đương: .\tasks.ps1 experiments hoặc make experiments
+```
+
+E01 dùng toàn bộ revision ghim, loại trùng và chia lại theo M1. Chỉ fit TF-IDF
+và mô hình trên train; validation để riêng, không chỉnh tham số theo test.
+TF-IDF ghép word n-gram và char n-gram; cấu hình và tham số chính xác nằm
+trong metadata cạnh CSV. Mỗi mô hình được kiểm tra ngưỡng F1 khai báo trong
+cột `f1_sanity_floor`; trạng thái nằm ở `sanity_pass`. Không dùng mẫu CI để
+báo cáo hiệu quả. Kết quả đọc trực tiếp từ
+[CSV E01](results/tables/e01_classical.csv), không sao chép số đo vào văn bản.
+
+```python
+from pidefense.models.classical import train_classical
+
+# Dùng splits và rng của cùng một lần chạy; chỉ đưa train vào hàm fit.
+detector = train_classical(splits.train, config.classical_model, rng.generator)
+label, score = detector.predict("What is a binary tree?")
+```
+
+`Detector.predict` trả `(label, score)`; label là `benign`/`injection`, score
+luôn hướng về lớp injection. Logistic Regression/Random Forest dùng
+`predict_proba`; Linear SVM dùng sigmoid của margin, **chưa hiệu chỉnh xác
+suất**. E01 dùng cùng quy tắc threshold cho dự đoán và tính các chỉ số.
+Metadata ghi seed, seed estimator, cấu hình, commit và trạng thái working tree,
+phiên bản, hash mã nguồn, nguồn dữ liệu và thành viên split dưới dạng ID/hash.
+
+Chạy hồi quy ngoại tuyến (chỉ fixture, tên tệp riêng):
+
+```powershell
+uv run python experiments/e01_baseline_classical_vs_transformer.py --fixture
+```
+
+Fixture golden được tạo bằng lệnh trên và kiểm tra trong pytest, không đại
+diện chất lượng mô hình. CLI tổng quát và lưu/nạp model triển khai để mốc sau.
 
 ## Phạm vi và giới hạn
 

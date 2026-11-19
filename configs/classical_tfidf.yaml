@@ -1,4 +1,4 @@
-# M0 configuration only; training is implemented in M2. Other values use defaults.
+# E01 uses this representation for all three classifiers. Other values use defaults.
 classical_model:
   vectorizer: tfidf_combo
   classifier: logreg

@@ -84,3 +84,41 @@
   DatasetDict thật trong bộ nhớ để kiểm tra adapter online, giả lập lỗi tải,
   tỷ lệ chia và cân bằng nhãn, tái lập seed, tiến triển stream, làm tròn,
   loại trùng/rò rỉ, dữ liệu quá nhỏ và CSV không hợp lệ. Không triển khai M2.
+
+## Quyết định M2
+
+- Chỉ triển khai baseline classical và các chỉ số cần cho E01; chưa làm
+  transformer, bootstrap, attack, middleware hoặc threshold tuning của mốc sau.
+  Dùng entry point thí nghiệm chạy bằng Python/PowerShell; CLI tổng quát và
+  lưu/nạp model triển khai để mốc sau, không cần cho acceptance M2.
+- Theo yêu cầu M2, `Detector.predict(text)` trả tuple `(label, score)`, thay
+  vì `GuardDecision` minh họa ở Phần 6. Label là benign/injection; score luôn
+  hướng về injection. Middleware có thể chuyển tuple sang GuardDecision ở M6.
+- Word n-gram và char n-gram đúng Phần 5; giữ mặc định TF-IDF scikit-learn:
+  smooth IDF, tf tuyến tính, L2 riêng mỗi nhánh, ghép sparse với trọng số bằng
+  nhau, không giới hạn vocabulary. Chỉ fit train, không fit lại trên val/test.
+- Dùng mặc định estimator của phiên bản ghim, tăng giới hạn vòng lặp cho
+  Logistic Regression và Linear SVM, chạy một worker để dễ tái lập. API đã
+  kiểm tra bằng inspect/docstring của thư viện cài đặt trước khi triển khai.
+  sklearn không nhận Generator tại random_state: lấy seed nguyên từ duy nhất
+  Generator của lần chạy và truyền vào estimator; ngẫu nhiên nội bộ sklearn
+  dùng seed đó, không tự reseed theo seed cấu hình. Ghi seed estimator và
+  toàn bộ tham số vào metadata, giữ thứ tự logreg, svm, rf sau khi chia tập.
+- LR/RF dùng xác suất lớp injection; SVM dùng sigmoid margin để có cùng miền
+  score. Sigmoid chưa hiệu chỉnh xác suất; chỉ giữ thứ hạng AUC và ranh giới
+  quyết định. Dùng threshold cố định, quy ước >=; không tuning trên test,
+  validation để riêng. Metric coi injection là positive; precision không xác
+  định trả về zero; AUC yêu cầu cả hai lớp, xử lý tie bằng nửa điểm.
+- Sàn sanity là kiểm tra F1 của từng mô hình, khai báo trong mã thí nghiệm
+  trước khi xem kết quả. Giá trị và trạng thái đọc từ cột f1_sanity_floor và
+  sanity_pass của CSV; không chép số đo vào báo cáo. Các chỉ số khác vẫn báo
+  đầy đủ, không áp cùng sàn vì chúng đo các khía cạnh khác nhau.
+- E01 giữ giao thức M1 pool/deduplicate/resplit và từ chối fallback nhỏ khi
+  chạy khoa học. Chế độ --fixture chỉ phục vụ hồi quy ngoại tuyến, ghi tệp
+  riêng và không được ghi đè tên bảng khoa học. Golden do cùng mã thí nghiệm
+  tạo ra; pytest tái tính và so sánh với dung sai số thực.
+- Metadata cạnh mỗi CSV gồm cấu hình, seed, commit, working-tree dirty,
+  phiên bản, hash mã nguồn/CSV và ID/hash văn bản theo split; không cần chép
+  payload vào metadata. Hash mã nguồn xác định nội dung khi chưa commit.
+  Tất cả kết quả giữ phạm vi nghiên cứu; F1 cao vẫn có thể bỏ lọt tấn công,
+  chưa kiểm chứng trước biến thể đối kháng và không bảo đảm an toàn sản phẩm.

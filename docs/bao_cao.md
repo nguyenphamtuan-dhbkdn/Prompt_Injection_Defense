@@ -1,7 +1,7 @@
 # Báo cáo nghiên cứu PI-DEFENSE
 
-Khung báo cáo theo Phần 12 của SPEC.md. M0 chưa có dữ liệu hoặc kết quả
-thực nghiệm; các phần kết quả sẽ đọc dữ liệu do mã thí nghiệm tạo trong results/.
+Khung báo cáo theo Phần 12 của SPEC.md. Baseline classical đã được tạo ở M2;
+các phần khác chờ mốc tương ứng. Chỉ đọc số đo từ tệp kết quả thí nghiệm.
 
 ## Giới thiệu và động lực
 
@@ -9,11 +9,28 @@ Chờ hoàn thiện ở mốc báo cáo.
 
 ## Dữ liệu và phương pháp
 
-Chờ triển khai bộ nạp dữ liệu và phương pháp đánh giá.
+Dùng revision deepset ghim trong metadata E01; pool split gốc, loại trùng
+và chia lại phân tầng theo seed. Đây không phải benchmark giữ test upstream.
+Corpus lành tự biên soạn được giữ riêng. Chỉ fit đặc trưng và mô hình trên train.
 
 ## Mô hình phát hiện và kết quả
 
-Chưa huấn luyện hoặc đánh giá mô hình.
+TF-IDF kết hợp word/char n-gram; so sánh Logistic Regression, Linear SVM và
+Random Forest trên cùng held-out test. Precision, recall, F1 và ROC-AUC lấy
+trực tiếp từ [CSV E01](../results/tables/e01_classical.csv); cấu hình, split,
+seed, commit và phiên bản nằm trong
+[metadata](../results/tables/e01_classical.metadata.json).
+
+Đọc kết quả hiện tại bằng PowerShell, không chép số đo vào văn bản:
+
+```powershell
+Import-Csv results/tables/e01_classical.csv |
+    Select-Object model, precision, recall, f1, roc_auc, f1_sanity_floor, sanity_pass
+```
+
+Linear SVM dùng sigmoid margin làm score, chưa hiệu chỉnh xác suất. Không
+chọn tham số hoặc threshold bằng test. Các số đo tổng hợp này không chứng
+minh khả năng chống obfuscation hay an toàn triển khai. Transformer chưa chạy.
 
 ## Tỷ lệ bị vượt qua và báo sai
 

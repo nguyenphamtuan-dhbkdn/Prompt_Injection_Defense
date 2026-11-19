@@ -1,0 +1,4 @@
+model,vectorizer,precision,recall,f1,roc_auc,threshold,f1_sanity_floor,sanity_pass,n_train,n_val,n_test
+logreg,tfidf_combo,0.8571428571428571,1.0,0.9230769230769231,1.0,0.5,0.8,True,42,6,12
+svm,tfidf_combo,0.8571428571428571,1.0,0.9230769230769231,1.0,0.5,0.8,True,42,6,12
+rf,tfidf_combo,1.0,0.6666666666666666,0.8,0.9305555555555556,0.5,0.8,True,42,6,12

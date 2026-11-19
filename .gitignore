@@ -24,3 +24,7 @@ results/figures/*
 !results/figures/.gitkeep
 results/tables/*
 !results/tables/.gitkeep
+!results/tables/e01_classical.csv
+!results/tables/e01_classical.metadata.json
+!results/tables/e01_classical_fixture.csv
+!results/tables/e01_classical_fixture.metadata.json

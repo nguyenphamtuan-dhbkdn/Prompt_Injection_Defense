@@ -22,6 +22,7 @@ try {
         'test-slow' { Invoke-Uv -Arguments @('run', 'pytest', '-m', 'slow') }
         'lint' { Invoke-Uv -Arguments @('run', 'ruff', 'check', '.') }
         'typecheck' { Invoke-Uv -Arguments @('run', 'mypy', '--strict', 'src') }
+        'experiments' { Invoke-Uv -Arguments @('run', 'python', 'experiments/e01_baseline_classical_vs_transformer.py') }
         'check' {
             Invoke-Uv -Arguments @('run', 'ruff', 'check', '.')
             Invoke-Uv -Arguments @('run', 'mypy', '--strict', 'src')
