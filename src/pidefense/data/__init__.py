@@ -1,1 +1,1 @@
-"""Reserved package for a later milestone; no functionality implemented in M0."""
+"""Dataset loading, validated provenance, and reproducible disjoint partitions."""

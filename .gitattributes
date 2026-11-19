@@ -1,0 +1,2 @@
+# Preserve the fixture bytes used by the provenance SHA-256 across Windows/Linux.
+data/raw/deepset_sample.csv -text

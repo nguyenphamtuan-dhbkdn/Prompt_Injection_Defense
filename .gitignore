@@ -14,6 +14,9 @@ build/
 dist/
 data/raw/*
 !data/raw/.gitkeep
+!data/raw/deepset_sample.csv
+!data/raw/deepset_sample.metadata.json
+!data/raw/README.md
 results/*
 !results/figures/
 !results/tables/

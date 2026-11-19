@@ -1,9 +1,9 @@
 # PI-DEFENSE
 
 Dự án nghiên cứu và đánh giá phòng thủ trước prompt injection. Hiện chỉ có
-khung dự án M0: cấu hình YAML, bộ sinh số ngẫu nhiên có seed và kiểm thử.
-Các mô-đun dữ liệu, mô hình, tấn công, middleware và thí nghiệm mới là vị trí
-dành sẵn; chưa có huấn luyện hay kết quả đánh giá.
+M0–M1: cấu hình YAML, bộ sinh số ngẫu nhiên có seed, tải dữ liệu và chia tập
+phân tầng. Các mô-đun mô hình, tấn công, middleware và thí nghiệm đánh giá
+vẫn là vị trí dành sẵn; chưa có huấn luyện hay kết quả đánh giá.
 
 ## Chạy trên Windows PowerShell
 
@@ -50,6 +50,27 @@ config = load_config("configs/default.yaml")
 rng = SimRNG.from_config(config)
 # Truyền cùng rng.generator cho mọi bước ngẫu nhiên trong một lần chạy.
 ```
+
+## Dữ liệu M1
+
+```python
+from pidefense.data.loader import load_benign_corpus, load_deepset_prompt_injections
+
+# Tiếp tục dùng config và rng của ví dụ trên. Offline không gọi mạng.
+splits = load_deepset_prompt_injections(config.data, rng.generator, offline=True)
+balance = splits.label_balance()  # Chỉ số lượng và tỷ lệ nhãn, không có raw text.
+benign = load_benign_corpus(config.data.benign_corpus_path)
+```
+
+Bỏ `offline=True` để tải/cache `deepset/prompt-injections` tại revision được
+ghim; lỗi kết nối/I/O tự dùng CSV nhỏ với cảnh báo. `splits.origin` cho biết
+nguồn đang dùng. Tập CSV nhỏ chỉ kiểm tra pipeline trong CI. Tham khảo
+[nguồn và cách tái tạo](data/raw/README.md).
+
+Train/val/test phân tầng theo tỷ lệ cấu hình sau khi loại trùng văn bản;
+nhãn mâu thuẫn hoặc dữ liệu quá nhỏ gây lỗi. Cùng seed, phiên bản và thứ tự
+gọi sẽ có cùng split. Corpus lành [tự biên soạn](data/benign_corpus/README.md)
+giữ riêng để đánh giá báo sai, có nguồn `student-curated, not scraped`.
 
 Phiên bản thư viện được ghim trong `pyproject.toml`; `uv.lock` cố định phần
 phụ thuộc bắc cầu cho `uv run`. Không cài các extra `transformer`, `demo`,

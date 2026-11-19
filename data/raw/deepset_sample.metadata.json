@@ -1,0 +1,21 @@
+{
+  "dataset": "deepset/prompt-injections",
+  "revision": "4f61ecb038e9c3fb77e21034b22511b523772cdd",
+  "url": "https://huggingface.co/datasets/deepset/prompt-injections/tree/4f61ecb038e9c3fb77e21034b22511b523772cdd",
+  "selection": "first 30 unique texts per label, sorted upstream splits then row order",
+  "seed": null,
+  "randomness": "none",
+  "label_counts": {
+    "0": 30,
+    "1": 30
+  },
+  "sha256": "fe4d2ce2d9773883317d7e87eea5219ef4b686122138c21d3c8687554ea142f6",
+  "git_commit": "6e8433032e3714d4d0c9857307a819720299ddab",
+  "versions": {
+    "datasets": "3.6.0",
+    "numpy": "2.2.6",
+    "pyarrow": "26.0.1"
+  },
+  "python": "3.11.18",
+  "purpose": "offline CI fixture only; not a representative evaluation dataset"
+}
