@@ -1,0 +1,66 @@
+[build-system]
+requires = ["hatchling==1.27.0"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pidefense"
+version = "0.1.0"
+description = "Reproducible prompt-injection defense research (local evaluation only)"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = [
+    "numpy==2.2.6",
+    "pandas==2.2.3",
+    "scikit-learn==1.6.1",
+    "scipy==1.15.3",
+    "matplotlib==3.10.3",
+    "seaborn==0.13.2",
+    "datasets==3.6.0",
+    "PyYAML==6.0.2",
+    "typer==0.16.0",
+    "rich==14.0.0",
+    "tqdm==4.67.1",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest==8.3.5",
+    "pytest-cov==6.1.1",
+    "hypothesis==6.131.9",
+    "ruff==0.11.13",
+    "mypy==1.15.0",
+    "pre-commit==4.2.0",
+    "types-PyYAML==6.0.12.20250516",
+]
+transformer = ["torch==2.7.1", "transformers==4.52.4"]
+demo = ["fastapi==0.115.12", "uvicorn==0.34.2", "httpx==0.28.1"]
+translate = ["deep-translator==1.11.4"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/pidefense"]
+
+[tool.uv]
+cache-dir = ".uv-cache"
+
+[tool.ruff]
+target-version = "py311"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B", "D", "ANN"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.mypy]
+python_version = "3.11"
+strict = true
+files = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--strict-markers -m 'not slow' --cov=pidefense --cov-report=term-missing --cov-fail-under=80"
+markers = [
+    "statistical: seeded statistical tests (select with -m statistical)",
+    "slow: requires optional heavy dependencies or a live local Ollama instance",
+]

@@ -1,0 +1,20 @@
+seed: 20260119
+data:
+  dataset_name: "deepset/prompt-injections"
+  benign_corpus_path: "data/benign_corpus/benign_queries.csv"
+  test_fraction: 0.2
+  val_fraction: 0.1
+classical_model:
+  vectorizer: tfidf_combo
+  classifier: logreg
+transformer_model:
+  base_model: "distilbert-base-uncased"
+  max_length: 128
+  epochs: 3
+  batch_size: 16
+attack:
+  techniques: [base64, leetspeak, zero_width, translate, indirect, multiturn]
+middleware:
+  guard_threshold: 0.5
+  ollama_model: "phi3:mini"
+  ollama_host: "http://localhost:11434"

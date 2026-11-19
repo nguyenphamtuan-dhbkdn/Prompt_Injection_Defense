@@ -1,0 +1,6 @@
+# M0 configuration only; optional training is implemented in M3.
+transformer_model:
+  base_model: "distilbert-base-uncased"
+  max_length: 128
+  epochs: 3
+  batch_size: 16
