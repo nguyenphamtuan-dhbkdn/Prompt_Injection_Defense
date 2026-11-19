@@ -45,3 +45,5 @@ results/tables/*
 !results/figures/e02_bypass_rate.pdf
 !results/figures/e03_precision_recall.png
 !results/figures/e03_precision_recall.pdf
+!results/tables/e04_indirect_injection_vs_output_filter_fixture.csv
+!results/tables/e04_indirect_injection_vs_output_filter_fixture.metadata.json

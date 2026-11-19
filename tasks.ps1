@@ -1,5 +1,5 @@
 param(
-    [ValidateSet('setup', 'test', 'test-slow', 'lint', 'typecheck', 'check', 'experiments', 'transformer', 'figures', 'report', 'demo')]
+    [ValidateSet('setup', 'test', 'test-slow', 'lint', 'typecheck', 'check', 'experiments', 'transformer', 'redteam', 'figures', 'report', 'demo')]
     [string]$Task = 'check'
 )
 
@@ -24,6 +24,7 @@ try {
         'typecheck' { Invoke-Uv -Arguments @('run', 'mypy', '--strict', 'src') }
         'experiments' { Invoke-Uv -Arguments @('run', 'python', 'experiments/e01_baseline_classical_vs_transformer.py') }
         'transformer' { Invoke-Uv -Arguments @('run', '--extra', 'transformer', 'python', 'experiments/e01_transformer.py') }
+        'redteam' { Invoke-Uv -Arguments @('run', 'python', 'experiments/e04_indirect_injection_vs_output_filter.py') }
         'check' {
             Invoke-Uv -Arguments @('run', 'ruff', 'check', '.')
             Invoke-Uv -Arguments @('run', 'mypy', '--strict', 'src')

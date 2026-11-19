@@ -1,6 +1,6 @@
 UV ?= uv
 
-.PHONY: setup test test-slow lint typecheck experiments transformer figures report demo
+.PHONY: setup test test-slow lint typecheck experiments transformer redteam figures report demo
 
 setup:
 	$(UV) sync --locked --extra dev
@@ -22,6 +22,9 @@ experiments:
 
 transformer:
 	$(UV) run --extra transformer python experiments/e01_transformer.py
+
+redteam:
+	$(UV) run python experiments/e04_indirect_injection_vs_output_filter.py
 
 # Later milestones must replace these explicit failures with real implementations.
 figures report demo:

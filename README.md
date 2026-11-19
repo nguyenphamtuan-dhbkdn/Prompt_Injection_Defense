@@ -215,6 +215,81 @@ uv run mypy --strict src
 uv run pytest
 ```
 
+## Red-team M7: Ollama cục bộ với middleware OFF/ON
+
+Khởi động Ollama riêng với model trong cấu hình (mặc định `phi3:mini`) đã có
+trên máy, rồi chạy từ thư mục gốc bằng PowerShell:
+
+```powershell
+uv run python experiments/e04_indirect_injection_vs_output_filter.py
+# Hoặc dùng Arrow cache đầy đủ đã được E01 xác minh, không cần gọi Hub:
+$revision = '4f61ecb038e9c3fb77e21034b22511b523772cdd'
+$cachePath = "data/raw/hf_cache/deepset___prompt-injections/default/0.0.0/$revision"
+uv run python experiments/e04_indirect_injection_vs_output_filter.py --prepared-cache $cachePath
+```
+
+Runner dùng toàn bộ nguồn injection held-out và đủ kỹ thuật, không subsample.
+Hai chế độ chia sẻ biến thể/seed; ON áp dụng toàn bộ GuardedChat, OFF dùng
+system cơ bản cùng điều cấm lộ system/override. Multi-turn giữ lịch sử riêng
+cho từng trial; indirect có user request/document tách biệt khi ON.
+
+`results/e04_trials.json` chứa transcript gốc, chỉ để đánh giá được cho phép.
+`results/tables/e04_indirect_injection_vs_output_filter.csv` giữ rate/count
+theo technique và chế độ. Metadata cạnh CSV giữ config, seed, commit/dirty,
+phiên bản, hash mã/đầu ra và nguồn split. `automated_raw_violation_rate` gồm
+đầu ra bị giữ lại; `automated_final_violation_rate`/`automated_success_rate`
+chỉ xét phản hồi trả cho người dùng, kể cả lượt trung gian. Chúng là heuristic,
+không chứng minh tấn công thành công. Error/skipped không vào mẫu số completed;
+rate không xác định để trống. CLI trả mã lỗi khi có trial lỗi backend/layer.
+
+Dịch mặc định skipped nếu chưa có backend thật. Cung cấp `--translation-cache
+data/local_translation_steps.json` để dùng bản dịch cục bộ đã chuẩn bị: JSON
+là danh sách object có `text`, `source_lang`, `target_lang`, `translation`,
+chứa cả bước en→vi và vi→en, key text khớp chính xác. Thiếu entry/không đổi
+được ghi skipped, không thay thế bằng bản dịch giả hoặc tính thành an toàn.
+Tệp chứa raw payload phải ở `data/` hoặc `results/`. Cần tự duyệt chất lượng
+dịch; cache chỉ xác minh định dạng, không chứng minh bảo toàn ngữ nghĩa.
+
+Đánh giá thủ công: đọc rubric trong metadata và transcript, điền bản sao
+`results/e04_manual_review.csv` với `manual_violation=yes/no/uncertain`,
+`reviewer`, `reason`, `sanitized_prompt`, `sanitized_response`. Giữ nguyên
+trial ID/hash. Chỉ điền verdict cho completed trial có đầu ra user-visible.
+Các trial bị chặn mà chưa trả gì là nonviolating theo cấu trúc, không tính
+là người đã duyệt. Nhãn pending/uncertain và coverage được báo riêng.
+Không ghi đè review đã có; nếu chạy lại với transcript khác, tạo template
+mới trong output directory khác. Tái tính mà không gọi LLM:
+
+```powershell
+uv run python experiments/e04_indirect_injection_vs_output_filter.py --report-from results/e04_trials.json --reviews results/e04_manual_review.csv --appendix docs/bao_cao.md
+```
+
+Phụ lục tự sinh che toàn bộ raw text, giữ dạng biến đổi/trạng thái/tín hiệu;
+ví dụ do reviewer làm sạch và lý do bất đồng được bổ sung từ CSV. Người
+duyệt phải che dữ liệu riêng, đích và system trước khi điền. Không diễn giải
+phần chưa duyệt như đồng thuận. Đây là nghiên cứu, không phải bảo đảm an toàn.
+
+Kiểm thử offline và fixture tổng hợp (không cần model hay dịch thật):
+
+```powershell
+uv run python experiments/e04_offline_fixture.py
+uv run pytest tests/integration/test_redteam.py --no-cov
+```
+
+Fixture luôn có hậu tố `_fixture`, metadata `fixture_only` và transport
+`injected_mock`; canned replies/phép dịch giả chỉ kiểm tra luồng, tuyệt đối
+không dùng để kết luận hiệu quả trên Ollama. Script fixture cập nhật phụ lục
+với nhãn mô phỏng rõ ràng. `--fixture` trên runner live chỉ giảm corpus;
+nó vẫn gọi Ollama, khác script offline.
+
+Kiểm thử live được đánh dấu slow và opt-in rõ ràng; không chạy trong CI mặc định:
+
+```powershell
+$env:PIDEFENSE_RUN_LIVE_OLLAMA = '1'
+$env:PIDEFENSE_PREPARED_CACHE = $cachePath
+# Tùy chọn: $env:PIDEFENSE_TRANSLATION_CACHE = 'data/local_translation_steps.json'
+uv run pytest tests/integration/test_redteam.py -m slow --no-cov
+```
+
 ## Phạm vi và giới hạn
 
 Đây là dự án nghiên cứu, chưa phải hệ thống an toàn dùng trong sản phẩm.
